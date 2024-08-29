@@ -12,3 +12,4 @@ Participants:
 
 Thiago Nadim Martinho ra:239426
 Lucas Félix ra:247064
+Isac Lucas Soares Braga ra:260514
