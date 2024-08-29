@@ -11,3 +11,4 @@ Introduction to Software Engineering and Sociotechnical Vision. Software Process
 Participants:
 
 Thiago Nadim Martinho ra:239426
+Lucas Félix ra:247064
