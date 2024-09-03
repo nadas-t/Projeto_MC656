@@ -1,5 +1,10 @@
-Thiago 1111111
-Lucas 222222
-Isac 333333
-Daniel 444444
-Rafael 555555
+Thiago Nadim Martinho ra:247348
+
+Lucas Félix ra:247064
+
+Isac Lucas Soares Braga ra:260514
+
+Rafael Masato Haga Costa ra:247348
+
+Daniel Henriques Pamplona ra:260401
+
