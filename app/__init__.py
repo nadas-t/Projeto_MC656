@@ -1,5 +1,5 @@
 from flask import Flask
-from app.Controller.criaBanco import Cria
+from app.Controller.configBanco import Cria
 
 # Cria a instância da aplicação Flask
 app = Flask(__name__, template_folder='View')

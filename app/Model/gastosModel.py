@@ -1,4 +1,4 @@
-from database import conexao
+from configBanco import conexao
 import sqlite3
 
 def criar_tabela_gastos():
