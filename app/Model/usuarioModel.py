@@ -6,7 +6,7 @@ def conexao():
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
     # Construa o caminho absoluto para o banco de dados
-    DB_PATH = os.path.join(BASE_DIR, '../database', 'database')
+    DB_PATH = os.path.join(BASE_DIR, '../database', 'database.db')
 
     # Conecte-se ao banco de dados
     con = sqlite3.connect(DB_PATH)
