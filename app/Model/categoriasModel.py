@@ -1,4 +1,4 @@
-from usuarioModel import conexao
+from database import conexao
 import sqlite3
 
 def criar_tabela_categorias():
