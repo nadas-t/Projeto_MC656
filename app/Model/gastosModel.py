@@ -1,30 +1,13 @@
-from configBanco import conexao
+from app.Model.configBancoModel import conexao
 import sqlite3
 
-def criar_tabela_gastos():
-    con = conexao()
-    try:
-        cur = con.cursor()
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS gastos (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                data TEXT NOT NULL,
-                valor REAL NOT NULL,
-                categoria_id INTEGER,
-                FOREIGN KEY (categoria_id) REFERENCES categorias (id)
-            )
-        """)
-        con.commit()
-    except Exception as e:
-        print(f"Erro ao criar tabela gastos: {str(e)}")
-    finally:
-        con.close()
+
 
 def adicionar_gasto(data, valor, categoria_id):
     con = conexao()
     try:
         cur = con.cursor()
-        cur.execute("INSERT INTO gastos (data, valor, categoria_id) VALUES (?, ?, ?)", (data, valor, categoria_id))
+        cur.execute("INSERT INTO Gastos (data, valor, categoria_id) VALUES (?, ?, ?)", (data, valor, categoria_id))
         con.commit()
         return "Gasto adicionado com sucesso!"
     except Exception as e:
@@ -38,10 +21,10 @@ def listar_gastos():
     con.row_factory = sqlite3.Row
     try:
         cur = con.cursor()
-        cur.execute("SELECT * FROM gastos")
+        cur.execute("SELECT * FROM Gastos")
         return cur.fetchall()
     except Exception as e:
-        print(f"Erro ao listar gastos: {str(e)}")
+        print(f"Erro ao listar Gastos: {str(e)}")
     finally:
         con.close()
 
@@ -50,7 +33,7 @@ def atualizar_gasto(id, data, valor, categoria_id):
     try:
         cur = con.cursor()
         cur.execute("""
-            UPDATE gastos 
+            UPDATE Gastos 
             SET data = ?, valor = ?, categoria_id = ?
             WHERE id = ?
         """, (data, valor, categoria_id, id))
@@ -66,7 +49,7 @@ def deletar_gasto(id):
     con = conexao()
     try:
         cur = con.cursor()
-        cur.execute("DELETE FROM gastos WHERE id = ?", (id,))
+        cur.execute("DELETE FROM Gastos WHERE id = ?", (id,))
         con.commit()
         return "Gasto deletado com sucesso!"
     except Exception as e:

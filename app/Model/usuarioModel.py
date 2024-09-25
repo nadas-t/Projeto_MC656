@@ -1,6 +1,6 @@
 import sqlite3
 import os
-from configBanco import conexao
+from app.Model.configBancoModel import conexao
 
 
 

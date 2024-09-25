@@ -1,4 +1,4 @@
-from app.Model.criaBancoModel import CriarBancoDados
+from app.Model.configBancoModel import CriarBancoDados
 
 def Cria():
     CriarBancoDados()
