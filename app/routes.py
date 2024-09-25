@@ -99,3 +99,7 @@ def feature2():
     saida = feature2Logica(valor1, valor2, valor3, valor4)
     flash(saida)
     return render_template('feature2.html')
+
+@app.route('/gastos', methods=['GET','POST'])
+def gastos():
+    return render_template('gastos.html')
