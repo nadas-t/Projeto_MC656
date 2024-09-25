@@ -2,6 +2,7 @@ from app import app
 from flask import render_template, request, flash, redirect
 from app.Controller.usuario import listarUsuario, verificarUsuario, adicionarUsuario, atualizarUsuario, deletarUsuario, feature2Logica
 from app.Controller.usuario import feature1Logica,  feature2Logica
+from app.Controller.gastosController import *
 
 @app.route('/')
 @app.route('/index')
@@ -102,4 +103,4 @@ def feature2():
 
 @app.route('/gastos', methods=['GET','POST'])
 def gastos():
-    return render_template('gastos.html')
+    return gastosController.create_gasto    
