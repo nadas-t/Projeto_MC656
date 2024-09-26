@@ -1,5 +1,7 @@
 from app.Model.configBancoModel import CriarBancoDados
 
 def Cria():
-    CriarBancoDados()
+    resultado=CriarBancoDados()
+    return resultado
+
 

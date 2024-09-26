@@ -1,7 +1,46 @@
-{% extends "layout.html" %}
+<!-- {% extends "layouts/layout.html" %}
 
 {%block body%}
 
-<h1>oi</h1>
 
-{% endblock %}
+<h1>Registrar Gastos</h1>
+    <form action="/gastos" method="post">
+        <input type="hidden" name="action" value="add">
+        <input type="date" name="data" required>
+        <input type="number" name="valor" required placeholder="Valor">
+        <input type="text" name="categoria_nome" required placeholder="Categoria">
+        <button type="submit">Adicionar Gasto</button>
+    </form>
+
+{% if gastos| length < 1 %}
+<h4>Você ainda não registrou nenhum gasto. Registre um agora!</h4>
+{% else %}
+<table>
+    <tr>
+        <th>Data</th>
+        <th>Valor</th>
+        <th>Categoria</th>
+        
+    </tr>
+    {%for gasto in gastos %}
+    <tr>
+        <td>{{ gasto.data }}</td>       
+        <td> {{ gasto.valor }}</td>       
+        <td> {{ gasto.categoria_nome }}</td>       
+        <td>
+            <form action="/gastos" method="post" style="display:inline;">
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="gasto_id" value="{{ gasto.id }}">
+                <button type="submit">Delete</button>
+            </form>
+            <form action="/gastos" method="post" style="display:inline;">
+                <input type="hidden" name="action" value="edit">
+                <input type="hidden" name="gasto_id" value="{{ gasto.id }}">
+                <button type="submit">Edit</button>
+            </form>
+        </td>        
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+{% endblock %} -->

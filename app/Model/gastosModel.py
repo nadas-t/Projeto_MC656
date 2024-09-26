@@ -3,12 +3,27 @@ import sqlite3
 
 
 
-def adicionar_gasto(data, valor, categoria_id):
+def adicionar_gasto(data, valor, categoria_nome):
     con = conexao()
     try:
         cur = con.cursor()
+        
+        # Verificar se a categoria já existe
+        cur.execute("SELECT id FROM Categorias WHERE nome = ?", (categoria_nome,))
+        categoria = cur.fetchone()
+        
+        # Se a categoria não existir, criá-la
+        if categoria is None:
+            cur.execute("INSERT INTO Categorias (nome) VALUES (?)", (categoria_nome,))
+            con.commit()  # Confirma a inserção da nova categoria
+            categoria_id = cur.lastrowid  # Pega o id da categoria recém criada
+        else:
+            categoria_id = categoria['id']  # Pega o id da categoria existente
+
+        # Agora que temos o categoria_id, podemos inserir o gasto
         cur.execute("INSERT INTO Gastos (data, valor, categoria_id) VALUES (?, ?, ?)", (data, valor, categoria_id))
         con.commit()
+
         return "Gasto adicionado com sucesso!"
     except Exception as e:
         con.rollback()
@@ -16,12 +31,13 @@ def adicionar_gasto(data, valor, categoria_id):
     finally:
         con.close()
 
+
 def listar_gastos():
     con = conexao()
     con.row_factory = sqlite3.Row
     try:
         cur = con.cursor()
-        cur.execute("SELECT * FROM Gastos")
+        cur.execute("SELECT Gastos.data, Gastos.valor, Categorias.nome AS categoria_nome FROM Gastos LEFT JOIN Categorias ON Gastos.categoria_id = Categorias.id")
         return cur.fetchall()
     except Exception as e:
         print(f"Erro ao listar Gastos: {str(e)}")
