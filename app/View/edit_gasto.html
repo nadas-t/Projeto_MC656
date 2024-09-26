@@ -1,0 +1,33 @@
+{% extends "layouts/layout.html" %}
+{% block body %}
+
+<h2>Editar Gasto</h2>
+
+<label for="categoria_nome">Categoria:</label>
+<select id="categoria_nome" name="categoria_nome" required>
+    {% for categoria in categorias %}
+        <option value="{{ categoria['nome'] }}" {% if categoria['nome'] == gasto['categoria_nome'] %}selected{% endif %}>
+            {{ categoria['nome'] }}
+        </option>
+    {% endfor %}
+</select>
+
+<form method="POST" action="{{ url_for('edit_gasto', gasto_id=gasto['id']) }}">
+    <div>
+        <label for="data">Data:</label>
+        <input type="date" id="data" name="data" value="{{ gasto['data'] }}" required>
+    </div>
+    <div>
+        <label for="valor">Valor:</label>
+        <input type="number" id="valor" name="valor" value="{{ gasto['valor'] }}" step="0.01" required>
+    </div>
+    <div>
+        <label for="categoria_nome">Categoria:</label>
+        <input type="text" id="categoria_nome" name="categoria_nome" value="{{ gasto['categoria_nome'] }}" required>
+    </div>
+    <div>
+        <button type="submit">Atualizar Gasto</button>
+        <a href="{{ url_for('gastos') }}">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

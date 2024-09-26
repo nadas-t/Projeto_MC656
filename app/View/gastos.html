@@ -1,0 +1,62 @@
+<!-- app/templates/gastos.html -->
+{% extends "layouts/layout.html" %}
+
+{% block body %}
+<h1>Registrar Gastos</h1>
+<form action="/gastos" method="post">
+    <input type="date" name="data" required>
+    <input type="number" name="valor" required placeholder="Valor">
+    <input type="text" name="categoria_nome" required placeholder="Categoria">
+    <button type="submit">Adicionar Gasto</button>
+</form>
+
+{% if gastos|length < 1 %}
+<h4>Você ainda não registrou nenhum gasto. Registre um agora!</h4>
+{% else %}
+<table>
+    <tr>
+        <th>Data</th>
+        <th>Valor</th>
+        <th>Categoria</th>
+        <th>Ações</th>
+    </tr>
+    {% for gasto in gastos %}
+    <tr>
+        <td>{{ gasto.data }}</td>
+        <td>{{ gasto.valor }}</td>
+        <td>{{ gasto.categoria_nome }}</td>
+        <td>
+            <form action="{{ url_for('delete_gasto', gasto_id=gasto.id) }}" method="post" style="display:inline;">
+                <button type="submit">Deletar</button>
+            </form>
+            <form action="{{ url_for('edit_gasto', gasto_id=gasto.id) }}" method="get" style="display:inline;">
+                <button type="submit">Editar</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

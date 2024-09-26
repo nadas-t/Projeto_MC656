@@ -1,0 +1,10 @@
+<!-- app/templates/updateCategoria.html -->
+{% extends "layouts/layout.html" %}
+
+{% block body %}
+<h1>Editar Categoria</h1>
+<form action="{{ url_for('edit_categoria', categoria_id=categoria.id) }}" method="post">
+    <input type="text" name="nome" value="{{ categoria.nome }}" required>
+    <button type="submit">Atualizar Categoria</button>
+</form>
+{% endblock %}
