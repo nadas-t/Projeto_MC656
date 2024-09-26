@@ -135,30 +135,3 @@ def delete_categoria(categoria_id):
     return categoriasController.delete_categoria(categoria_id)
 
 
-
-    # if request.method == 'POST':
-    #      if 'action' in request.form:
-    #         action = request.form.get('action')
-    #         if action == 'add':
-    #             # Lógica para adicionar um novo gasto
-    #             data = request.form.get('data')
-    #             valor = request.form.get('valor')
-    #             categoria_nome = request.form.get('categoria_nome')
-    #             gastosController.create_gasto (data, valor, categoria_nome) #ver
-    #             return redirect(url_for('gastos'))
-            
-    #         elif action == 'delete':
-    #             # Lógica para deletar um gasto
-    #             gasto_id = request.form.get('gasto_id')
-    #             gastosController.delete_gasto(gasto_id)
-    #             return redirect(url_for('gastos'))
-
-    #         elif action == 'edit':
-    #             # Lógica para atualizar um gasto
-    #             gasto_id = request.form.get('gasto_id')
-    #             data = request.form.get('data') # se não existir retorna None
-    #             valor = request.form.get('valor')
-    #             categoria_nome = request.form.get('categoria_nome')
-    #             return gastosController.update_gasto(gasto_id,data,valor,categoria_nome)               
-    # # vizuaizar os gastos
-    # return gastosController.get_gastos()
