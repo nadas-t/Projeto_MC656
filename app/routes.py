@@ -1,5 +1,6 @@
 from app import app
 from flask import render_template, request, flash, redirect
+from app.Controller import categoriasController
 from app.Controller.usuario import listarUsuario, verificarUsuario, adicionarUsuario, atualizarUsuario, deletarUsuario, feature2Logica
 from app.Controller.usuario import feature1Logica,  feature2Logica
 from app.Controller.gastosController import *
@@ -101,11 +102,40 @@ def feature2():
     flash(saida)
     return render_template('feature2.html')
 
-@app.route('/gastos', methods=['GET','POST'])
+# Rotas para Gastos
+@app.route('/gastos', methods=['GET', 'POST'])
 def gastos():
+    if request.method == 'POST':
+        return GastosController.add_gasto()
+    return GastosController.get_gastos()
+
+@app.route('/gastos/edit/<int:gasto_id>', methods=['GET', 'POST'])
+def edit_gasto(gasto_id):
+    return GastosController.update_gasto(gasto_id)
 
 
-    
+
+@app.route('/gastos/delete/<int:gasto_id>', methods=['POST'])
+def delete_gasto(gasto_id):
+    return GastosController.delete_gasto(gasto_id)
+
+# Rotas para Categorias
+@app.route('/categorias', methods=['GET', 'POST'])
+def categorias():
+    if request.method == 'POST':
+        return categoriasController.add_categoria()
+    return categoriasController.get_categorias()
+
+@app.route('/categorias/edit/<int:categoria_id>', methods=['GET', 'POST'])
+def edit_categoria(categoria_id):
+    return categoriasController.update_categoria(categoria_id)
+
+@app.route('/categorias/delete/<int:categoria_id>', methods=['POST'])
+def delete_categoria(categoria_id):
+    return categoriasController.delete_categoria(categoria_id)
+
+
+
     # if request.method == 'POST':
     #      if 'action' in request.form:
     #         action = request.form.get('action')

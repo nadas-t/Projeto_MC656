@@ -31,16 +31,31 @@ def adicionar_gasto(data, valor, categoria_nome):
     finally:
         con.close()
 
-
-def listar_gastos():
+def obter_gasto_por_id(gasto_id):
     con = conexao()
     con.row_factory = sqlite3.Row
     try:
         cur = con.cursor()
-        cur.execute("SELECT Gastos.data, Gastos.valor, Categorias.nome AS categoria_nome FROM Gastos LEFT JOIN Categorias ON Gastos.categoria_id = Categorias.id")
-        return cur.fetchall()
+        cur.execute("SELECT Gastos.id, Gastos.data, Gastos.valor, Categorias.nome AS categoria_nome FROM Gastos LEFT JOIN Categorias ON Gastos.categoria_id = Categorias.id WHERE Gastos.id = ?", (gasto_id,))
+        return cur.fetchone()  # Retorna apenas um único gasto
     except Exception as e:
-        print(f"Erro ao listar Gastos: {str(e)}")
+        print(f"Erro ao obter gasto: {str(e)}")
+    finally:
+        con.close()
+        
+def listar_gastos(gasto_id=None):
+    con = conexao()
+    con.row_factory = sqlite3.Row
+    try:
+        cur = con.cursor()
+        if gasto_id is not None:
+            cur.execute("SELECT * FROM Gastos WHERE id = ?", (gasto_id,))
+            return cur.fetchone()  # Retorna apenas um gasto
+        else:
+            cur.execute("SELECT * FROM Gastos")
+            return cur.fetchall()  # Retorna todos os gastos
+    except Exception as e:
+        print(f"Erro ao listar gastos: {str(e)}")
     finally:
         con.close()
 
