@@ -2,7 +2,7 @@ from app import app
 from flask import render_template, request, flash, redirect, url_for
 from app.Controller import categoriasController
 from app.Controller.usuario import listarUsuario, verificarUsuario, adicionarUsuario, atualizarUsuario, deletarUsuario
-from app.Controller.gastosController import *
+from app.Controller.gastosController import GastosController, SalarioController
 from app.Controller.salarioController import *
 
 @app.route('/')
