@@ -1,3 +1,4 @@
 # Arquivos e diretórios a serem ignorados pelo git
 .venv
 #Completar ...
+*.pyc
