@@ -88,3 +88,9 @@ def deletar_gasto(id):
         return f"Erro ao deletar gasto: {str(e)}"
     finally:
         con.close()
+
+def converte_gasto_horas(gastos, ganho_por_hora):
+    for gasto in gastos:
+        gasto.valor = gasto.valor /ganho_por_hora
+    return gastos
+    

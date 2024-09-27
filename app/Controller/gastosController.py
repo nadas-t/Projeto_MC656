@@ -6,14 +6,19 @@ from app.Model.gastosModel import (
     adicionar_gasto,
     atualizar_gasto,
     deletar_gasto,
+    converte_gasto_horas,
     obter_gasto_por_id
 )
+from app.Controller.salarioController import *
 
 class GastosController:
+    # Static variable initialized as 0
+    exibir_em_horas = 0
+
     @staticmethod
     def get_gastos():
         gastos = listar_gastos()
-        return render_template('gastos.html', gastos=gastos)
+        return render_template('gastos.html', gastos=gastos, exibir_horas = GastosController.exibir_em_horas, salario_hora = SalarioController.get_salario_hora())
 
     @staticmethod
     def add_gasto():
@@ -41,8 +46,6 @@ class GastosController:
         categorias = listar_categorias()
 
         return render_template('edit_gasto.html', gasto=gasto, categorias=categorias)
-
-
 
     @staticmethod
     def delete_gasto(gasto_id):
