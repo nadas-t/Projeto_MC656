@@ -1,0 +1,29 @@
+<!-- app/templates/updateGasto.html -->
+{% extends "layouts/layout.html" %}
+
+{% block body %}
+<h1>Editar Gasto</h1>
+<form action="{{ url_for('edit_gasto', gasto_id=gasto.id) }}" method="post">
+    <input type="date" name="data" value="{{ gasto.data }}" required>
+    <input type="number" name="valor" value="{{ gasto.valor }}" required>
+    <input type="text" name="categoria_nome" value="{{ gasto.categoria_nome }}" required>
+    <button type="submit">Atualizar Gasto</button>
+</form>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
