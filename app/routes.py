@@ -1,9 +1,9 @@
 from app import app
-from flask import render_template, request, flash, redirect
+from flask import render_template, request, flash, redirect, url_for
 from app.Controller import categoriasController
-from app.Controller.usuario import listarUsuario, verificarUsuario, adicionarUsuario, atualizarUsuario, deletarUsuario, feature2Logica
-from app.Controller.usuario import feature1Logica,  feature2Logica
-from app.Controller.gastosController import *
+from app.Controller.usuario import listarUsuario, verificarUsuario, adicionarUsuario, atualizarUsuario, deletarUsuario
+from app.Controller.gastosController import GastosController, SalarioController
+from app.Controller.salarioController import *
 
 @app.route('/')
 @app.route('/index')
@@ -79,29 +79,6 @@ def removerUsuario():
             
     return ""
 
-######Mudar aqui
-@app.route('/feature1', methods=['GET', 'POST'])
-def feature1():
-    valor1 = request.form.get('valor1')
-    valor2 = request.form.get('valor2')
-    valor3 = request.form.get('valor3')
-    valor4 = request.form.get('valor4')
-
-    saida = feature1Logica(valor1, valor2, valor3, valor4)
-    flash(saida)
-    return render_template('feature2.html')
-
-@app.route('/feature2', methods=['GET', 'POST'])
-def feature2():
-    valor1 = request.form.get('valor1')
-    valor2 = request.form.get('valor2')
-    valor3 = request.form.get('valor3')
-    valor4 = request.form.get('valor4')
-
-    saida = feature2Logica(valor1, valor2, valor3, valor4)
-    flash(saida)
-    return render_template('feature2.html')
-
 # Rotas para Gastos
 @app.route('/gastos', methods=['GET', 'POST'])
 def gastos():
@@ -119,6 +96,15 @@ def edit_gasto(gasto_id):
 def delete_gasto(gasto_id):
     return GastosController.delete_gasto(gasto_id)
 
+@app.route('/convert_gasto', methods=['POST'])
+def convert_gasto():
+    if GastosController.exibir_em_horas == 0:
+        GastosController.exibir_em_horas = 1
+    elif GastosController.exibir_em_horas == 1:
+        GastosController.exibir_em_horas = 0
+    return redirect(url_for('gastos'))  # Redirect back to the gastos page
+
+
 # Rotas para Categorias
 @app.route('/categorias', methods=['GET', 'POST'])
 def categorias():
@@ -134,4 +120,11 @@ def edit_categoria(categoria_id):
 def delete_categoria(categoria_id):
     return categoriasController.delete_categoria(categoria_id)
 
+
+# Rotas para Salário
+@app.route('/salario', methods=['GET', 'POST'])
+def salario():
+    if request.method == 'POST':
+        return SalarioController.add_salario()
+    return SalarioController.get_salario()
 

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Salário</title>
+</head>
+<body>
+    <h1>Registrar Salário</h1>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form method="post">
+        <input type="number" id="salario" name="salario" required placeholder="Salário">
+        <input type="number" id="horas_trabalho" name="horas_trabalho" required placeholder="Horas de trabalho">
+        <button type="submit">Adicionar Salário</button>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>Salário</th>
+                <th>Horas de Trabalho</th>
+            </tr>
+        </thead>
+        <tbody>
+            <td>{{ salario }}</td>
+            <td>{{ horas_trabalho }}</td>
+        </tbody>
+    </table>
+</body>
+</html>
