@@ -1,9 +1,3 @@
 # Arquivos e diretórios a serem ignorados pelo git
 .venv
-
-/app/database/database
-
-# Ignorar arquivos .pyc
-*.pyc
-
 #Completar ...
