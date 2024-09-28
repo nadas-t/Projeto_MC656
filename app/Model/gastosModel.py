@@ -18,7 +18,7 @@ def adicionar_gasto(data, valor, categoria_nome):
             con.commit()  # Confirma a inserção da nova categoria
             categoria_id = cur.lastrowid  # Pega o id da categoria recém criada
         else:
-            categoria_id = categoria['id']  # Pega o id da categoria existente
+            categoria_id = categoria[0]  # Pega o id da categoria existente
 
         # Agora que temos o categoria_id, podemos inserir o gasto
         cur.execute("INSERT INTO Gastos (data, valor, categoria_id) VALUES (?, ?, ?)", (data, valor, categoria_id))
