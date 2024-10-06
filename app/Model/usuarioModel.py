@@ -2,16 +2,15 @@ import sqlite3
 import os
 from app.Model.configBancoModel import conexao
 
-
-
-def adicionar(CPF, nome, idade, email):
+def adicionar(CPF, nome, idade, email, senha):
     
     resultado = ""
     try:
         # Connect to SQLite3 database and execute the INSERT
         con = conexao()
         cur = con.cursor()
-        cur.execute("INSERT INTO Usuario (CPF, nome, idade, email) VALUES (?,?,?,?)",(CPF, nome, idade, email))
+        cur.execute("INSERT INTO Usuario (CPF, nome, idade, email, senha) VALUES (?,?,?,?,?)",
+                     (CPF, nome, idade, email, senha))
         con.commit()
         resultado = "Usuário cadastrado com sucesso!"
     except:
@@ -23,7 +22,7 @@ def adicionar(CPF, nome, idade, email):
         # Send the transaction message to result.html
     return resultado
 
-def atualizar(CPF, nome, idade, email):
+def atualizar(CPF, nome, idade, email, senha):
     resultado = ""
 
     try:
@@ -31,15 +30,37 @@ def atualizar(CPF, nome, idade, email):
         con = conexao()
         cur = con.cursor()
         # Usar placeholders (?) para evitar SQL Injection
-        cur.execute(""" UPDATE Usuario SET nome = ?, idade = ?, email = ?
+        cur.execute(""" UPDATE Usuario SET nome = ?, idade = ?, email = ?, senha = ?
                 WHERE CPF = ?
-            """, (nome, idade, email, CPF))
+            """, (nome, idade, email, senha, CPF))
 
         con.commit()
         resultado = "Usuário atualizado com sucesso!"
     except Exception as e:
         con.rollback()
         resultado = f"Erro ao atualizar usuário! Detalhes: {str(e)}" 
+    finally:
+        con.close()
+        return resultado
+    
+def modificarSenha(CPF, senha):
+    resultado = ""
+
+    try:
+        # Conectar ao banco de dados
+        con = conexao()
+        cur = con.cursor()
+
+        # Usar placeholders (?) para evitar SQL Injection
+        cur.execute(""" UPDATE Usuario SET senha = ?
+                WHERE CPF = ? 
+            """, (senha, CPF))
+
+        con.commit()
+        resultado = "Senha atualizada com sucesso!"
+    except Exception as e:
+        con.rollback()
+        resultado = f"Erro ao atulizar a senha usuário! Detalhes: {str(e)}" 
     finally:
         con.close()
         return resultado
@@ -71,6 +92,29 @@ def verifica(CPF):
     con.close()
     
     return result
+
+def verificaLogin(email, senha):
+    
+    con = conexao()    
+    con.row_factory = sqlite3.Row
+
+    print(email)
+    print(senha)
+
+    cur = con.cursor()
+    cur.execute("SELECT * FROM Usuario WHERE email = ? AND senha = ?", (email, senha))
+
+    lista = cur.fetchall()
+
+    con.close()
+
+    print(f"Resultados: {lista}")
+
+    if not lista:
+        return None
+    
+    # Send the results of the SELECT to the list.html page
+    return lista
 
 def obter_dados_usuario(CPF):
     

@@ -1,0 +1,47 @@
+{% extends "layouts/layout2.html" %}
+
+{%block body%}
+
+{% set mensagens = get_flashed_messages() %}
+{% if mensagens %}
+    <div>
+        {% for msg in mensagens %}
+            {% if msg == "Senha atualizada com sucesso!" %}
+                <div class="alerta alerta-successo"  role="alert">
+                    {{ msg }}
+                </div>
+            {% else %}
+                <div class="alerta alerta-erro" role="alert">
+                    {{ msg }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Trocar senha</h4>
+        <p class="card-description"> Trocar senha </p>
+        <form class="forms-sample" method="POST" action="/trocar_senha">
+          <div class="form-group">
+            <label for="CPF">Senha atual</label>
+            <input type="password" class="form-control" id="senha" name="senha" placeholder="Digite a sua senha">
+          </div>
+          <div class="form-group">
+            <label for="nome">Senha nova</label>
+            <input type="password" class="form-control" id="senha1" name="senha1" placeholder="Digite a nova senha">
+          </div>
+          <div class="form-group">
+            <label for="idade">Confirmar a senha nova</label>
+            <input type="password" class="form-control" id="senha2" name="senha2" placeholder="Confirme a senha nova">
+          </div>
+          <button type="submit" class="btn btn-primary mr-2">Confirmar</button>
+          <button class="btn btn-dark">Cancelar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

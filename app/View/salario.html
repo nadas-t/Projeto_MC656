@@ -1,38 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Salário</title>
-</head>
-<body>
-    <h1>Registrar Salário</h1>
+{% extends "layouts/layout2.html" %}
 
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul>
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
+{% block body %}
 
-    <form method="post">
-        <input type="number" id="salario" name="salario" required placeholder="Salário">
-        <input type="number" id="horas_trabalho" name="horas_trabalho" required placeholder="Horas de trabalho">
-        <button type="submit">Adicionar Salário</button>
-    </form>
-    <table>
-        <thead>
-            <tr>
-                <th>Salário</th>
-                <th>Horas de Trabalho</th>
-            </tr>
-        </thead>
-        <tbody>
-            <td>{{ salario }}</td>
-            <td>{{ horas_trabalho }}</td>
-        </tbody>
-    </table>
-</body>
-</html>
+<div class="col-12 grid-margin stretch-card">
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title">Registrar salário</h4>
+      <p class="card-description">Registrar salário</p>
+
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+          <ul>
+              {% for message in messages %}
+                  <li>{{ message }}</li>
+              {% endfor %}
+          </ul>
+      {% endif %}
+        {% endwith %}
+      
+      <form class="forms-sample" method="POST">
+
+        <div class="form-group">
+          <label for="salario">Salario</label>
+          <input type="number" class="form-control" id="salario" name="salario" value="{{ salario }}" placeholder="Salário" required>
+        </div>
+
+        <div class="form-group">
+          <label for="valor">Horas de Trabalho</label>
+          <input type="text" class="form-control" id="horas_trabalho" name="horas_trabalho" value="{{ horas_trabalho }}" placeholder="Horas de trabalho" required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary mr-2">Adicionar salário</button>
+        <button type="button" class="btn btn-dark" onclick="window.history.back();">Cancelar</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+    function selectOption(option) {
+        const button = document.getElementById('dropdownMenuSizeButton1');
+        button.textContent = option; // Atualiza o texto do botão com a opção selecionada
+    }
+</script>
+
+{% endblock %}
