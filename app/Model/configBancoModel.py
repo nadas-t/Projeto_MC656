@@ -37,8 +37,9 @@ def CriarBancoDados():
         cursor.execute('''CREATE TABLE IF NOT EXISTS Usuario (
                         CPF INTEGER PRIMARY KEY AUTOINCREMENT,  
                         nome TEXT NOT NULL, 
-                        idade INTEGER, 
-                        email TEXT UNIQUE)''')
+                        idade INTEGER NOT NULL, 
+                        email TEXT UNIQUE NOT NULL,
+                        senha TEXT NOT NULL)''')
 
         # Confirmar as alterações
         conn.commit()

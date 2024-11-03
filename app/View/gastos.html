@@ -1,78 +1,93 @@
 <!-- app/templates/gastos.html -->
-{% extends "layouts/layout.html" %}
+{% extends "layouts/layout2.html" %}
 
 {% block body %}
-<h1>Registrar Gastos</h1>
-<div style="display: flex; align-items: center;">
-    <form action="/gastos" method="post" style="display: flex; align-items: center;">
-        <input type="date" name="data" required>
-        <input type="number" name="valor" required placeholder="Valor">
-        <input type="text" name="categoria_nome" required placeholder="Categoria">
-        <button type="submit">Adicionar Gasto</button>
-    </form>
 
-    <form action="{{ url_for('convert_gasto')}}" method="post" style="margin-left: 10px;">
-        <button type="submit">Converter Gasto</button>
-    </form>
+<div class="page-header">
+  <h3 class="page-title"> Registrar gastos </h3>
 </div>
 
+<div class="row">
+  <div class="col-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Registrar gastos</h4>
+        <p class="card-description"> Registrar gastos </p>
+        <form class="forms-sample" method="POST" action="/gastos">
+          <div class="form-group">
+            <label for="data">Data</label>
+            <input type="date" class="form-control" name="data" id="data">
+          </div>
+          <div class="form-group">
+            <label for="valor">Valor</label>
+            <input type="text" class="form-control" name="valor" id="valor" placeholder="Digite o valor">
+          </div>
+          <div class="form-group">
+            <label for="categoria">Categoria</label>
+            <input type="text" class="form-control" id="categoria_nome" name="categoria_nome" placeholder="Digite a categoria">
+          </div>
 
+          <button type="submit" id="adicionar_gasto" name="adicionar_gasto" value="Adicionar gasto" class="btn btn-primary mr-2">Adicionar
+            gasto</button>
+          <button type="submit" id="converter_gasto" name="converter_gasto" value="converter_gasto" class="btn btn-primary mr-2">Converter
+            gasto</button>
+        </form>
 
-{% if gastos|length < 1 %}
-<h4>Você ainda não registrou nenhum gasto. Registre um agora!</h4>
-{% else %}
-<table>
-    <tr>
-        <th>Data</th>
-        {%if exibir_horas %}
-            <th>Horas</th>
-        {% else %}
-            <th>Valor</th>
-        {%endif%}
-        <th>Categoria</th>
-        <th>Ações</th>
-    </tr>
-    {% for gasto in gastos %}
-    <tr>
-        <td>{{ gasto.data }}</td>
-        {%if exibir_horas %}
-            <td>{{ "%.1f"|format((gasto.valor / salario_hora)) }}</td>
-        {% else %}
-            <td>{{ gasto.valor }}</td>
-        {%endif%}
-        <td>{{ gasto.categoria_nome }}</td>
-        <td>
-            <form action="{{ url_for('delete_gasto', gasto_id=gasto.id) }}" method="post" style="display:inline;">
-                <button type="submit">Deletar</button>
-            </form>
-            <form action="{{ url_for('edit_gasto', gasto_id=gasto.id) }}" method="get" style="display:inline;">
-                <button type="submit">Editar</button>
-            </form>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-{% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+
+        <h4 class="card-title">Gastos</h4>
+        {% if gastos|length < 1 %} <h4 class="card-title">Você ainda não registrou nenhum gasto. Registre um agora!</h4>
+          {% else %}
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <tr>
+                <th>Data</th>
+                {%if exibir_horas %}
+                <th>Horas</th>
+                {% else %}
+                <th>Valor</th>
+                {%endif%}
+                <th>Categoria</th>
+                <th>Remover</th>
+                <th>Alterar</th>
+              </tr>
+              {% for gasto in gastos %}
+              <tr>
+                <td>{{ gasto.data }}</td>
+                {%if exibir_horas %}
+                <td>{{ "%.1f"|format((gasto.valor / salario_hora)) }}</td>
+                {% else %}
+                <td>{{ gasto.valor }}</td>
+                {%endif%}
+                <td>{{ gasto.categoria_nome }}</td>
+                <td>
+                  <form action="{{ url_for('delete_gasto', gasto_id=gasto.id) }}" method="post"">
+              <button type=" submit" class="btn btn-danger btn-fw">Deletar</button>
+                  </form>
+                </td>
+                <td>
+                  <form action="{{ url_for('edit_gasto', gasto_id=gasto.id) }}" method="get" style="display:inline;">
+                    <button type="submit" class="btn btn-info btn-fw">Editar</button>
+                  </form>
+                </td>
+
+              </tr>
+              {% endfor %}
+            </table>
+          </div>
+          {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+
 {% endblock %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

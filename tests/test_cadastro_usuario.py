@@ -1,25 +1,25 @@
 import unittest
-from app.Controller.usuario import adicionarUsuario, atualizarUsuario, deletarUsuario
+from app.Controller.usuarioController import adicionarUsuario, atualizarUsuario, deletarUsuario
 
 class TestUsuario(unittest.TestCase):
 
     def test_adicionar_usuario(self):
         # Aqui você chamaria a função real
-        resultado = adicionarUsuario('200', 'teste', '25', 'email@email.com')
+        resultado = adicionarUsuario('200', 'teste', '25', 'email@email.com', 'senha123', 'senha123')
 
         # Verifique se o resultado está correto
         self.assertEqual(resultado, "Usuário cadastrado com sucesso!")
 
     def test_adicionar_usuario_erro(self):
         # Aqui você chamaria a função real
-        resultado = adicionarUsuario('', '', '', '')
+        resultado = adicionarUsuario('', '', '', '', '', '')
 
         # Verifique se o resultado está correto
         self.assertEqual(resultado, "Erro ao cadastrar usuário")
 
     def test_atualizar_usuario(self):
         # Aqui você chamaria a função real
-        resultado = atualizarUsuario('200', 'teste2', '30', 'email2@email.com')
+        resultado = atualizarUsuario('200', 'teste2', '30', 'email2@email.com', 'senha123')
 
         # Verifique se o resultado está correto
         self.assertEqual(resultado, "Usuário atualizado com sucesso!")

@@ -1,0 +1,81 @@
+{% extends "layouts/layout2.html" %}
+
+{%block body%}
+
+{% set mensagens = get_flashed_messages() %}
+{% if mensagens %}
+    <div>
+        {% for msg in mensagens %}
+            {% if msg == "Usuário atualizado com sucesso!" %}
+                <div class="alerta alerta-successo"  role="alert">
+                    {{ msg }}
+                </div>
+            {% else %}
+                <div class="alerta alerta-erro" role="alert">
+                    {{ msg }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+
+
+<div class="col-12 grid-margin stretch-card">
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title">Dados da conta</h4>
+      <p class="card-description"> Dados da conta </p>
+      <form class="forms-sample" method="POST" action="/configuracao_conta">
+        <div class="form-group">
+          <label for="CPF">CPF</label>
+          <input type="text" class="form-control" id="CPF" name="CPF" placeholder="Digite o seu CPF" value="{{row["CPF"] }}">
+
+        </div>
+        <div class="form-group">
+          <label for="nome">Nome</label>
+          <input type="text" class="form-control" id="nome" name="nome" placeholder="Digite o seu nome" value="{{row["nome"] }}">
+          
+        </div>
+        <div class="form-group">
+          <label for="idade">Idade</label>
+          <input type="text" class="form-control" id="idade" name="idade" placeholder="Digite a sua idade" value="{{row["idade"] }}">
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" class="form-control" id="email" name="email" placeholder="Digite o seu email" value="{{row["email"] }}">
+        </div>
+        <div class="form-group">
+          <label for="genero">Gênero</label>
+          <select class="form-control" id="genero" name="genero">
+            <option>Não implementado ainda</option>
+            <option>Masculino</option>
+            <option>Feminino</option>
+            <option>Outro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Upload de arquivo</label>
+          <input type="file" name="img[]" class="file-upload-default">
+          <div class="input-group col-xs-12">
+            <input type="text" class="form-control file-upload-info" disabled placeholder="Não implementado">
+            <span class="input-group-append">
+              <button class="file-upload-browse btn btn-primary" type="button">Upload</button>
+            </span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="cidade">Cidade</label>
+          <input type="text" class="form-control" id="cidade" name="cidade" placeholder="Não implementado">
+        </div>
+        <div class="form-group">
+          <label for="descricao">Descrição</label>
+          <textarea class="form-control" id="descricao" name="descricao" placeholder="Não implementado" rows="4"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary mr-2">Confirmar</button>
+        <button class="btn btn-dark">Cancelar</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

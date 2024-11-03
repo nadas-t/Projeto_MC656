@@ -5,7 +5,7 @@ from app.Controller.configBanco import Cria
 app = Flask(__name__, template_folder='View')
 
 # Configurações da aplicação
-app.config['SECRET_KEY'] = "chave" #Mudar depois
+app.config['SECRET_KEY'] = "Ro5&B+agkatMy9cG1fLeq@Sfvn607by4" #chave para oroteger os dados
 
 ###Cria o banco de dados localmente
 Cria()
