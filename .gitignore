@@ -2,3 +2,5 @@
 .venv
 #Completar ...
 *.pyc
+__pycache__/
+*.db
