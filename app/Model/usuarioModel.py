@@ -1,153 +1,56 @@
-import sqlite3
-import os
-from app.Model.configBancoModel import conexao
+from dataclasses import dataclass
+from app.Model.databaseManager import DBTransactionManager, BaseDB
 
-def adicionar(CPF, nome, idade, email, senha):
+class ErroAoCadastrarUsuario(Exception):
+    pass
+
+@dataclass
+class Usuario:
+    nome: str = None
+    email: str = None
+    senha: str = None
+    idade: int = None
+    CPF: int = None  # Alterar para str
+
+    def __post_init__(self):
+        pass
     
-    resultado = ""
-    try:
-        # Connect to SQLite3 database and execute the INSERT
-        con = conexao()
-        cur = con.cursor()
-        cur.execute("INSERT INTO Usuario (CPF, nome, idade, email, senha) VALUES (?,?,?,?,?)",
-                     (CPF, nome, idade, email, senha))
-        con.commit()
-        resultado = "Usuário cadastrado com sucesso!"
-    except:
-        con.rollback()
-        resultado = "Erro ao cadastrar usuário"
+class UsuarioDB: 
+    def __init__(self):
+        self._db = BaseDB()
 
-    finally:
-        con.close()
-        # Send the transaction message to result.html
-    return resultado
-
-def atualizar(CPF, nome, idade, email, senha):
-    resultado = ""
-
-    try:
-        # Conectar ao banco de dados
-        con = conexao()
-        cur = con.cursor()
-        # Usar placeholders (?) para evitar SQL Injection
-        cur.execute(""" UPDATE Usuario SET nome = ?, idade = ?, email = ?, senha = ?
-                WHERE CPF = ?
-            """, (nome, idade, email, senha, CPF))
-
-        con.commit()
-        resultado = "Usuário atualizado com sucesso!"
-    except Exception as e:
-        con.rollback()
-        resultado = f"Erro ao atualizar usuário! Detalhes: {str(e)}" 
-    finally:
-        con.close()
-        return resultado
+    def adicionar(self, usuario: Usuario):
+        with DBTransactionManager() as db_manager:
+            db_manager.executar_transacao(
+                comando="INSERT INTO Usuario (CPF, nome, idade, email, senha) VALUES (?,?,?,?,?)",
+                params=(usuario.CPF, usuario.nome, usuario.idade, usuario.email, usuario.senha),
+            )
+        return "Usuário cadastrado com sucesso!"  # Mensagem de sucesso
     
-def modificarSenha(CPF, senha):
-    resultado = ""
-
-    try:
-        # Conectar ao banco de dados
-        con = conexao()
-        cur = con.cursor()
-
-        # Usar placeholders (?) para evitar SQL Injection
-        cur.execute(""" UPDATE Usuario SET senha = ?
-                WHERE CPF = ? 
-            """, (senha, CPF))
-
-        con.commit()
-        resultado = "Senha atualizada com sucesso!"
-    except Exception as e:
-        con.rollback()
-        resultado = f"Erro ao atulizar a senha usuário! Detalhes: {str(e)}" 
-    finally:
-        con.close()
-        return resultado
-
-
-def listar():
-
-    con = conexao()    
-    con.row_factory = sqlite3.Row
-
-    cur = con.cursor()
-    cur.execute("SELECT * FROM Usuario")
-
-    lista = cur.fetchall()
-    con.close()
-    # Send the results of the SELECT to the list.html page
-    return lista
-
-def verifica(CPF):
-    con = conexao()
-    con.row_factory = sqlite3.Row
-
-    cur = con.cursor()
-    # Execute a consulta para verificar a existência do usuário com o ID fornecido
-    cur.execute("SELECT 1 FROM Usuario WHERE CPF = ?", (CPF,))
-    
-    # Fetch one result; if a result is found, user exists
-    result = cur.fetchone()
-    con.close()
-    
-    return result
-
-def verificaLogin(email, senha):
-    
-    con = conexao()    
-    con.row_factory = sqlite3.Row
-
-    print(email)
-    print(senha)
-
-    cur = con.cursor()
-    cur.execute("SELECT * FROM Usuario WHERE email = ? AND senha = ?", (email, senha))
-
-    lista = cur.fetchall()
-
-    con.close()
-
-    print(f"Resultados: {lista}")
-
-    if not lista:
-        return None
-    
-    # Send the results of the SELECT to the list.html page
-    return lista
-
-def obter_dados_usuario(CPF):
-    
-    con = conexao()    
-    con.row_factory = sqlite3.Row
-
-    cur = con.cursor()
-    cur.execute("SELECT * FROM Usuario WHERE CPF = ?", (CPF,))
-
-    lista = cur.fetchall()
-    con.close()
-
-    if not lista:
-        return None
-    
-    # Send the results of the SELECT to the list.html page
-    return lista
-
-def deletar(CPF):
-    resultado = ""
-
-    try:
-        # Conectar ao banco de dados
-        con = conexao()
-        cur = con.cursor()
-        # Usar placeholders (?) para evitar SQL Injection
-        cur.execute("DELETE FROM Usuario WHERE CPF = ?", (CPF,))
-
-        con.commit()
-        resultado = "Usuário removido com sucesso!"
-    except Exception as e:
-        con.rollback()
-        resultado = f"Erro ao deletar usuário! Detalhes: {str(e)}"
-    finally:
-        con.close()
-        return resultado
+    def verificaLogin(self, usuario: Usuario):
+            with DBTransactionManager() as db_manager:
+                valor = db_manager.executar_transacao(
+                    comando="SELECT * FROM Usuario WHERE email = ? AND senha = ?",
+                    params=(usuario.email, usuario.senha),
+                    fetchone=True,
+            )
+            if not valor:
+                return None
+            return valor
+        
+    def atualizar(self, usuario: Usuario):
+            with DBTransactionManager() as db_manager:
+                db_manager.executar_transacao(
+                    comando="UPDATE Usuario SET nome = ?, idade = ?, email = ?, senha = ? WHERE CPF = ?",
+                    params=(usuario.nome, usuario.idade, usuario.email, usuario.senha, usuario.CPF),
+                )
+            return "Usuário atualizado com sucesso!"  # Mensagem de sucesso
+        
+        
+    def modificarSenha(self, usuario: Usuario):
+            with DBTransactionManager() as db_manager:
+                db_manager.executar_transacao(
+                    comando="UPDATE Usuario SET senha = ? WHERE CPF = ? ",
+                    params=(usuario.senha, usuario.CPF),
+                )
+            return "Senha atualizada com sucesso!"  # Mensagem de sucesso

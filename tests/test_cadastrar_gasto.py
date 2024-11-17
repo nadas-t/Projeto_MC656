@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
-from app.Model.gastosModel import adicionar_gasto, listar_gastos
+
+from app.Model.gastosModel import GastosDB, Gastos, listar_gastos
 
 class TestRegistrarGasto(unittest.TestCase):
     
@@ -13,7 +14,9 @@ class TestRegistrarGasto(unittest.TestCase):
         mock_conexao.return_value = mock_con
         mock_con.cursor.return_value = mock_cur
 
-        resultado = adicionar_gasto('2024-09-26', '100.50', 'Transporte')
+
+        valores = Gastos(data='2024-09-26', valor='100.50', categoria='Transporte')
+        resultado = GastosDB.adicionar_gasto(valores)
 
         mock_cur.execute.assert_any_call("SELECT id FROM Categorias WHERE nome = ?", ('Transporte',))
         mock_cur.execute.assert_any_call("INSERT INTO Gastos (data, valor, categoria_id) VALUES (?, ?, ?)", ('2024-09-26', '100.50', 1))
@@ -30,7 +33,9 @@ class TestRegistrarGasto(unittest.TestCase):
         mock_con.cursor.return_value = mock_cur
         mock_cur.lastrowid = 4
 
-        resultado = adicionar_gasto('2024-09-26', '100.50', 'Viagem')
+
+        valores = Gastos(data='2024-09-26', valor='100.50', categoria='Viagem')
+        resultado = GastosDB.adicionar_gasto(valores)
 
         mock_cur.execute.assert_any_call("SELECT id FROM Categorias WHERE nome = ?", ('Viagem',))
         mock_cur.execute.assert_any_call("INSERT INTO Gastos (data, valor, categoria_id) VALUES (?, ?, ?)", ('2024-09-26', '100.50', 4))
