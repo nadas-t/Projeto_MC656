@@ -1,64 +1,59 @@
-from app.Model.databaseManager import conexao
-import sqlite3
+from dataclasses import dataclass
+from app.Model.databaseManager import DBTransactionManager, BaseDB
 
 
-def adicionar_categoria(nome):
-    con = conexao()
-    try:
-        cur = con.cursor()
-        cur.execute("INSERT INTO Categorias (nome) VALUES (?)", (nome,))
-        con.commit()
+@dataclass
+class Categorias:
+    id: int = None
+    nome: str = None
+
+    def __post_init__(self):
+        pass
+
+
+class CategoriasDB:
+    def __init__(self):
+        self._db = BaseDB()
+
+    def adicionar_categoria(self, categoria: Categorias):
+        with DBTransactionManager() as db_manager:
+            db_manager.executar_transacao(
+                comando="INSERT INTO Categorias (nome) VALUES (?)",
+                params=(categoria.nome,),
+            )
         return "Categoria adicionada com sucesso!"
-    except Exception as e:
-        con.rollback()
-        return f"Erro ao adicionar categoria: {str(e)}"
-    finally:
-        con.close()
 
+    def listar_categorias():
+        with DBTransactionManager() as db_manager:
+            resultado = db_manager.executar_transacao(
+                comando="SELECT * FROM Categorias",
+                fetchall=True,
+            )
+            if resultado:
+                Categorias = [
+                    {
+                        "id": row[0],
+                        "data": row[1],
+                        "valor": row[2],
+                        "categoria_nome": row[3],
+                    }
+                    for row in resultado
+                ]
+                return Categorias
+        return []
 
-def listar_categorias():
-    con = conexao()
-    con.row_factory = sqlite3.Row
-    try:
-        cur = con.cursor()
-        cur.execute("SELECT * FROM Categorias")
-        return cur.fetchall()
-    except Exception as e:
-        print(f"Erro ao listar categorias: {str(e)}")
-    finally:
-        con.close()
-
-
-def atualizar_categoria(id, nome):
-    con = conexao()
-    try:
-        cur = con.cursor()
-        cur.execute(
-            """
-            UPDATE Categorias 
-            SET nome = ?
-            WHERE id = ?
-        """,
-            (nome, id),
-        )
-        con.commit()
+    def atualizar_categoria(self, categoria: Categorias):
+        with DBTransactionManager() as db_manager:
+            db_manager.executar_transacao(
+                comando="UPDATE Categorias SET nome = ? WHERE id = ?",
+                params=(categoria.nome, categoria.id),
+            )
         return "Categoria atualizada com sucesso!"
-    except Exception as e:
-        con.rollback()
-        return f"Erro ao atualizar Categoria: {str(e)}"
-    finally:
-        con.close()
 
-
-def deletar_categoria(id):
-    con = conexao()
-    try:
-        cur = con.cursor()
-        cur.execute("DELETE FROM Categorias WHERE id = ?", (id,))
-        con.commit()
+    def deletar_categoria(self, categoria: Categorias):
+        with DBTransactionManager() as db_manager:
+            db_manager.executar_transacao(
+                comando="DELETE FROM Categorias WHERE id = ?",
+                params=(categoria.id,),
+            )
         return "Categoria deletada com sucesso!"
-    except Exception as e:
-        con.rollback()
-        return f"Erro ao deletar categoria: {str(e)}"
-    finally:
-        con.close()

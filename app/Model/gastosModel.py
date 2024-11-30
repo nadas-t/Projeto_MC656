@@ -1,105 +1,125 @@
-from app.Model.databaseManager import conexao
-import sqlite3
+from dataclasses import dataclass
+from app.Model.databaseManager import DBTransactionManager, BaseDB
 
 
-def adicionar_gasto(data, valor, categoria_nome):
-    con = conexao()
-    try:
-        cur = con.cursor()
+@dataclass
+class Gastos:
+    id: int = None
+    data: str = None
+    valor: float = None
+    categoria: int = None
 
-        # Verificar se a categoria já existe
-        cur.execute("SELECT id FROM Categorias WHERE nome = ?", (categoria_nome,))
-        categoria = cur.fetchone()
-
-        # Se a categoria não existir, criá-la
-        if categoria is None:
-            cur.execute("INSERT INTO Categorias (nome) VALUES (?)", (categoria_nome,))
-            con.commit()  # Confirma a inserção da nova categoria
-            categoria_id = cur.lastrowid  # Pega o id da categoria recém criada
-        else:
-            categoria_id = categoria[0]  # Pega o id da categoria existente
-
-        # Agora que temos o categoria_id, podemos inserir o gasto
-        cur.execute(
-            "INSERT INTO Gastos (data, valor, categoria_id) VALUES (?, ?, ?)",
-            (data, valor, categoria_id),
-        )
-        con.commit()
-
-        return "Gasto adicionado com sucesso!"
-    except Exception as e:
-        con.rollback()
-        return f"Erro ao adicionar gasto: {str(e)}"
-    finally:
-        con.close()
+    def __post_init__(self):
+        pass
 
 
-def obter_gasto_por_id(gasto_id):
-    con = conexao()
-    con.row_factory = sqlite3.Row
-    try:
-        cur = con.cursor()
-        cur.execute(
-            "SELECT Gastos.id, Gastos.data, Gastos.valor, Categorias.nome AS categoria_nome FROM Gastos LEFT JOIN Categorias ON Gastos.categoria_id = Categorias.id WHERE Gastos.id = ?",
-            (gasto_id,),
-        )
-        return cur.fetchone()  # Retorna apenas um único gasto
-    except Exception as e:
-        print(f"Erro ao obter gasto: {str(e)}")
-    finally:
-        con.close()
+@dataclass
+class Categorias:
+    id: int = None
+    nome: str = None
+
+    def __post_init__(self):
+        pass
 
 
-def listar_gastos(gasto_id=None):
-    con = conexao()
-    con.row_factory = sqlite3.Row
-    try:
-        cur = con.cursor()
-        if gasto_id is not None:
-            cur.execute("SELECT * FROM Gastos WHERE id = ?", (gasto_id,))
-            return cur.fetchone()  # Retorna apenas um gasto
-        else:
-            cur.execute("SELECT * FROM Gastos")
-            return cur.fetchall()  # Retorna todos os gastos
-    except Exception as e:
-        print(f"Erro ao listar gastos: {str(e)}")
-    finally:
-        con.close()
+class GastosDB:
 
+    def __init__(self):
+        self._db = BaseDB()
 
-def atualizar_gasto(id, data, valor, categoria_id):
-    con = conexao()
-    try:
-        cur = con.cursor()
-        cur.execute(
-            """
-            UPDATE Gastos 
-            SET data = ?, valor = ?, categoria_id = ?
-            WHERE id = ?
-        """,
-            (data, valor, categoria_id, id),
-        )
-        con.commit()
+    def adicionar_gasto(self, gasto: Gastos, categorias: Categorias):
+        try:
+            with DBTransactionManager() as db_manager:
+                # Verificar se a categoria já existe
+                categoria = db_manager.executar_transacao(
+                    comando="SELECT id FROM Categorias WHERE nome = ?",
+                    params=(categorias.nome,),
+                    fetchone=True,
+                )
+
+                # Se a categoria não existir, criar e recuperar o ID
+                if categoria is None:
+                    db_manager.executar_transacao(
+                        comando="INSERT INTO Categorias (nome) VALUES (?)",
+                        params=(categorias.nome,),
+                    )
+                    # Recuperar o último ID inserido
+                    categoria_id = db_manager.executar_transacao(
+                        comando="SELECT last_insert_rowid()",
+                        fetchone=True,
+                    )[0]
+                else:
+                    # Categoria já existente, pegar o ID
+                    categoria_id = categoria[0]
+
+                # Inserir o gasto com o ID da categoria
+                db_manager.executar_transacao(
+                    comando="INSERT INTO Gastos (data, valor, categoria_id) VALUES (?, ?, ?)",
+                    params=(gasto.data, gasto.valor, categoria_id),
+                )
+
+            return "Gasto adicionado com sucesso!"
+        except Exception as e:
+            print(f"Ocorreu um erro: {e}")
+            raise
+
+    def atualizar_gasto(self, gasto_id, categoria_nome, gasto: Gastos):
+        with DBTransactionManager() as db_manager:
+            db_manager.executar_transacao(
+                comando="UPDATE Gastos SET data = ?, valor = ? WHERE id = ?",
+                params=(gasto.data, gasto.valor, gasto_id),
+            )
+
+            db_manager.executar_transacao(
+                comando="UPDATE Categorias SET nome = ? WHERE id = (SELECT categoria_id FROM Gastos WHERE id = ? LIMIT 1);",
+                params=(categoria_nome, gasto_id),
+            )
+
         return "Gasto atualizado com sucesso!"
-    except Exception as e:
-        con.rollback()
-        return f"Erro ao atualizar gasto: {str(e)}"
-    finally:
-        con.close()
 
+    def listar_gastos(self, gastos: Gastos):
+        with DBTransactionManager() as db_manager:
 
-def deletar_gasto(id):
-    con = conexao()
-    try:
-        cur = con.cursor()
-        cur.execute("DELETE FROM Gastos WHERE id = ?", (id,))
-        con.commit()
+            if gastos.id is not None:
+                resultado = db_manager.executar_transacao(
+                    comando="SELECT Gastos.id AS gasto_id, data, valor, Categorias.nome AS categoria_nome "
+                    "FROM Gastos "
+                    "JOIN Categorias ON Gastos.categoria_id = Categorias.id WHERE gasto_id = ?",
+                    params=(gastos.id,),
+                )
+            else:
+                # Corrigir a concatenação das partes da consulta SQL
+                resultado = db_manager.executar_transacao(
+                    comando="SELECT Gastos.id AS gasto_id, data, valor, Categorias.nome AS categoria_nome "
+                    "FROM Gastos "
+                    "JOIN Categorias ON Gastos.categoria_id = Categorias.id"
+                )
+
+        # Verificar se a consulta retornou algum resultado
+        if resultado:
+            # Transformar os resultados em uma lista de dicionários
+            gastos = [
+                {
+                    "id": row[0],
+                    "data": row[1],
+                    "valor": row[2],
+                    "categoria_nome": row[3],
+                }
+                for row in resultado
+            ]
+            return gastos
+
+        # Caso não tenha resultados, retornar uma lista vazia
+        return []
+
+    def deletar_gasto(self, gasto_id):
+        with DBTransactionManager() as db_manager:
+            db_manager.executar_transacao(
+                comando="DELETE FROM Gastos WHERE id = ?",
+                params=(gasto_id,),
+            )
         return "Gasto deletado com sucesso!"
-    except Exception as e:
-        con.rollback()
-        return f"Erro ao deletar gasto: {str(e)}"
-    finally:
-        con.close()
+
 
 
 def converte_gasto_horas(gastos, ganho_por_hora):
