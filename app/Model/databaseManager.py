@@ -1,8 +1,15 @@
-from app.Model.configBancoModel import conexao
+import sqlite3
+import os
 
 
 class ErroNaComunicacaoComDB(Exception):
     pass
+
+
+def conexao():
+    DB_PATH = os.path.join("app", "database", "database.db")
+    con = sqlite3.connect(DB_PATH)
+    return con
 
 
 class DBTransactionManager:

@@ -1,7 +1,6 @@
-from app.Model.configBancoModel import CriarBancoDados
+from app.Model.configBancoModel import InstanciadorDB
+
 
 def Cria():
-    resultado=CriarBancoDados()
-    return resultado
-
-
+    instanciador_db = InstanciadorDB()
+    instanciador_db.CriarBancoDados()

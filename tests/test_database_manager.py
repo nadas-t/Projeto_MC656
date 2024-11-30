@@ -1,11 +1,7 @@
 from dataclasses import dataclass
 import unittest
 
-from app.Model.databaseManager import (
-    BaseDB,
-    DBTransactionManager,
-    ErroNaComunicacaoComDB,
-)
+from app.Model.databaseManager import BaseDB, DBTransactionManager
 
 
 @dataclass

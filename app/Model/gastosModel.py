@@ -121,6 +121,7 @@ class GastosDB:
         return "Gasto deletado com sucesso!"
 
 
+
 def converte_gasto_horas(gastos, ganho_por_hora):
     for gasto in gastos:
         gasto.valor = gasto.valor / ganho_por_hora
