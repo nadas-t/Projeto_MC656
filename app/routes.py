@@ -137,7 +137,6 @@ def add_salario():
             salario = request.form.get('salario')  
             horas_trabalho = request.form.get('horas_trabalho')
 
-
             resultado = usuarioController.UsuariosController.adicionarSalario(session['CPF'], salario, horas_trabalho)
             flash(resultado)
             return redirect('/salario')
@@ -164,7 +163,6 @@ def gastos():
             return redirect("/convert_gasto")
 
     return GastosController.get_gastos(session['CPF'])
-
 
 
 @app.route("/gastos/edit/<int:gasto_id>", methods=["GET", "POST"])
