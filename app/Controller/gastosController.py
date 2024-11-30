@@ -21,12 +21,7 @@ class GastosController:
         gasto = Gastos(id=None)
         gasto_db = GastosDB()
         gastos = gasto_db.listar_gastos(gasto)
-        return render_template(
-            "gastos.html",
-            gastos=gastos,
-            exibir_horas=GastosController.exibir_em_horas,
-            salario_hora=87,
-        )
+        return render_template("gastos.html",gastos=gastos)
 
     @staticmethod
     def add_gasto():
@@ -36,7 +31,7 @@ class GastosController:
         gasto = Gastos(data=data, valor=valor)
         gasto_db = GastosDB()
         categoria = Categorias(nome=categoria_nome)
-        gasto_db.adicionar_gasto(gasto, categoria)
+        gasto_db.registrar_gasto_com_transacao(gasto, categoria)
         return redirect("/gastos")
 
     def update_gasto(gasto_id):
@@ -47,8 +42,8 @@ class GastosController:
             valor = request.form.get("valor")
             categoria_nome = request.form.get("categoria_nome")
 
-            gasto = Gastos(data=data, valor=valor)
-            gasto_db.atualizar_gasto(gasto_id, categoria_nome, gasto)
+            gasto = Gastos(data=data, valor=valor, id=gasto_id)
+            gasto_db.atualizar_gasto(categoria_nome, gasto)
             return redirect("/gastos")
 
         gasto = Gastos(id=gasto_id)  # Criando um objeto Gastos com o ID fornecido

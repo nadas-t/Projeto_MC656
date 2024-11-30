@@ -1,116 +1,89 @@
 from dataclasses import dataclass
+from app.Model.categoriasModel import Categorias
 from app.Model.databaseManager import DBTransactionManager, BaseDB
+from app.Model.categoriasModel import CategoriasDB
 
 
 @dataclass
 class Gastos:
-    id: int = None
     data: str = None
     valor: float = None
-    categoria: int = None
-
-    def __post_init__(self):
-        pass
-
-
-@dataclass
-class Categorias:
     id: int = None
-    nome: str = None
+    categoria: Categorias = None
 
     def __post_init__(self):
-        pass
-
+        pass  # TODO adicionar validação dos campos
 
 class GastosDB:
 
     def __init__(self):
         self._db = BaseDB()
+        self._categoriaBD = CategoriasDB()
 
-    def adicionar_gasto(self, gasto: Gastos, categorias: Categorias):
-        try:
-            with DBTransactionManager() as db_manager:
-                # Verificar se a categoria já existe
-                categoria = db_manager.executar_transacao(
-                    comando="SELECT id FROM Categorias WHERE nome = ?",
-                    params=(categorias.nome,),
-                    fetchone=True,
-                )
+    def registrar_gasto_com_transacao(self, gasto: Gastos, categorias: Categorias):
+        with DBTransactionManager():
+            categoria_id = self._categoriaBD.vincular_categoria(categorias)
+            self.registrar_gasto(categoria_id, gasto)
 
-                # Se a categoria não existir, criar e recuperar o ID
-                if categoria is None:
-                    db_manager.executar_transacao(
-                        comando="INSERT INTO Categorias (nome) VALUES (?)",
-                        params=(categorias.nome,),
-                    )
-                    # Recuperar o último ID inserido
-                    categoria_id = db_manager.executar_transacao(
-                        comando="SELECT last_insert_rowid()",
-                        fetchone=True,
-                    )[0]
-                else:
-                    # Categoria já existente, pegar o ID
-                    categoria_id = categoria[0]
+    def registrar_gasto(self, categoria, gasto):
+        self._db.executar_transacao(
+            comando="INSERT INTO Gastos (data, valor, categoria_id) VALUES (?, ?, ?)",
+            params=(gasto.data, gasto.valor, categoria),
+        )
 
-                # Inserir o gasto com o ID da categoria
-                db_manager.executar_transacao(
-                    comando="INSERT INTO Gastos (data, valor, categoria_id) VALUES (?, ?, ?)",
-                    params=(gasto.data, gasto.valor, categoria_id),
-                )
-
-            return "Gasto adicionado com sucesso!"
-        except Exception as e:
-            print(f"Ocorreu um erro: {e}")
-            raise
-
-    def atualizar_gasto(self, gasto_id, categoria_nome, gasto: Gastos):
+    def atualizar_gasto(self, categoria_nome, gasto: Gastos):
         with DBTransactionManager() as db_manager:
             db_manager.executar_transacao(
                 comando="UPDATE Gastos SET data = ?, valor = ? WHERE id = ?",
-                params=(gasto.data, gasto.valor, gasto_id),
+                params=(gasto.data, gasto.valor, gasto.id),
             )
 
             db_manager.executar_transacao(
                 comando="UPDATE Categorias SET nome = ? WHERE id = (SELECT categoria_id FROM Gastos WHERE id = ? LIMIT 1);",
-                params=(categoria_nome, gasto_id),
+                params=(categoria_nome, gasto.id),
             )
 
         return "Gasto atualizado com sucesso!"
 
     def listar_gastos(self, gastos: Gastos):
-        with DBTransactionManager() as db_manager:
-
+        with DBTransactionManager():
             if gastos.id is not None:
-                resultado = db_manager.executar_transacao(
-                    comando="SELECT Gastos.id AS gasto_id, data, valor, Categorias.nome AS categoria_nome "
-                    "FROM Gastos "
-                    "JOIN Categorias ON Gastos.categoria_id = Categorias.id WHERE gasto_id = ?",
-                    params=(gastos.id,),
-                )
+                resultado = self.recuperar_gasto(gastos.id)
             else:
-                # Corrigir a concatenação das partes da consulta SQL
-                resultado = db_manager.executar_transacao(
-                    comando="SELECT Gastos.id AS gasto_id, data, valor, Categorias.nome AS categoria_nome "
-                    "FROM Gastos "
-                    "JOIN Categorias ON Gastos.categoria_id = Categorias.id"
-                )
+                resultado = self.recuperar_gastos_registrados()
+            if resultado:
+                gastos = [
+                    self.converter_consulta_de_gastos_em_objeto(row)
+                    for row in resultado
+                ]
+                return gastos
+            return []
 
-        # Verificar se a consulta retornou algum resultado
-        if resultado:
-            # Transformar os resultados em uma lista de dicionários
-            gastos = [
-                {
-                    "id": row[0],
-                    "data": row[1],
-                    "valor": row[2],
-                    "categoria_nome": row[3],
-                }
-                for row in resultado
-            ]
-            return gastos
+    def recuperar_gasto(self, gasto_id: int):
+        gasto = self._db.executar_transacao(
+            comando="SELECT Gastos.id AS gasto_id, data, valor, Categorias.nome AS categoria_nome "
+            "FROM Gastos "
+            "JOIN Categorias ON Gastos.categoria_id = Categorias.id WHERE gasto_id = ?",
+            params=(gasto_id,),
+        )
+        return gasto
 
-        # Caso não tenha resultados, retornar uma lista vazia
-        return []
+    def recuperar_gastos_registrados(self):
+        gastos = self._db.executar_transacao(
+            comando="SELECT Gastos.id AS gasto_id, data, valor, Categorias.nome AS categoria_nome "
+            "FROM Gastos "
+            "JOIN Categorias ON Gastos.categoria_id = Categorias.id"
+        )
+        return gastos
+
+    def converter_consulta_de_gastos_em_objeto(self, consulta) -> Gastos:
+        gasto = {
+            "id": consulta[0],
+            "data": consulta[1],
+            "valor": consulta[2],
+            "categoria_nome": consulta[3],
+        }
+        return gasto
 
     def deletar_gasto(self, gasto_id):
         with DBTransactionManager() as db_manager:
@@ -119,7 +92,6 @@ class GastosDB:
                 params=(gasto_id,),
             )
         return "Gasto deletado com sucesso!"
-
 
 
 def converte_gasto_horas(gastos, ganho_por_hora):
