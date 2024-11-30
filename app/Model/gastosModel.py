@@ -1,17 +1,16 @@
-from app.Model.configBancoModel import conexao
+from app.Model.databaseManager import conexao
 import sqlite3
-
 
 
 def adicionar_gasto(data, valor, categoria_nome):
     con = conexao()
     try:
         cur = con.cursor()
-        
+
         # Verificar se a categoria já existe
         cur.execute("SELECT id FROM Categorias WHERE nome = ?", (categoria_nome,))
         categoria = cur.fetchone()
-        
+
         # Se a categoria não existir, criá-la
         if categoria is None:
             cur.execute("INSERT INTO Categorias (nome) VALUES (?)", (categoria_nome,))
@@ -21,7 +20,10 @@ def adicionar_gasto(data, valor, categoria_nome):
             categoria_id = categoria[0]  # Pega o id da categoria existente
 
         # Agora que temos o categoria_id, podemos inserir o gasto
-        cur.execute("INSERT INTO Gastos (data, valor, categoria_id) VALUES (?, ?, ?)", (data, valor, categoria_id))
+        cur.execute(
+            "INSERT INTO Gastos (data, valor, categoria_id) VALUES (?, ?, ?)",
+            (data, valor, categoria_id),
+        )
         con.commit()
 
         return "Gasto adicionado com sucesso!"
@@ -31,18 +33,23 @@ def adicionar_gasto(data, valor, categoria_nome):
     finally:
         con.close()
 
+
 def obter_gasto_por_id(gasto_id):
     con = conexao()
     con.row_factory = sqlite3.Row
     try:
         cur = con.cursor()
-        cur.execute("SELECT Gastos.id, Gastos.data, Gastos.valor, Categorias.nome AS categoria_nome FROM Gastos LEFT JOIN Categorias ON Gastos.categoria_id = Categorias.id WHERE Gastos.id = ?", (gasto_id,))
+        cur.execute(
+            "SELECT Gastos.id, Gastos.data, Gastos.valor, Categorias.nome AS categoria_nome FROM Gastos LEFT JOIN Categorias ON Gastos.categoria_id = Categorias.id WHERE Gastos.id = ?",
+            (gasto_id,),
+        )
         return cur.fetchone()  # Retorna apenas um único gasto
     except Exception as e:
         print(f"Erro ao obter gasto: {str(e)}")
     finally:
         con.close()
-        
+
+
 def listar_gastos(gasto_id=None):
     con = conexao()
     con.row_factory = sqlite3.Row
@@ -59,15 +66,19 @@ def listar_gastos(gasto_id=None):
     finally:
         con.close()
 
+
 def atualizar_gasto(id, data, valor, categoria_id):
     con = conexao()
     try:
         cur = con.cursor()
-        cur.execute("""
+        cur.execute(
+            """
             UPDATE Gastos 
             SET data = ?, valor = ?, categoria_id = ?
             WHERE id = ?
-        """, (data, valor, categoria_id, id))
+        """,
+            (data, valor, categoria_id, id),
+        )
         con.commit()
         return "Gasto atualizado com sucesso!"
     except Exception as e:
@@ -75,6 +86,7 @@ def atualizar_gasto(id, data, valor, categoria_id):
         return f"Erro ao atualizar gasto: {str(e)}"
     finally:
         con.close()
+
 
 def deletar_gasto(id):
     con = conexao()
@@ -89,8 +101,8 @@ def deletar_gasto(id):
     finally:
         con.close()
 
+
 def converte_gasto_horas(gastos, ganho_por_hora):
     for gasto in gastos:
-        gasto.valor = gasto.valor /ganho_por_hora
+        gasto.valor = gasto.valor / ganho_por_hora
     return gastos
-    

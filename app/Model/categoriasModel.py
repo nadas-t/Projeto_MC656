@@ -1,6 +1,5 @@
-from app.Model.configBancoModel import conexao
+from app.Model.databaseManager import conexao
 import sqlite3
-
 
 
 def adicionar_categoria(nome):
@@ -16,6 +15,7 @@ def adicionar_categoria(nome):
     finally:
         con.close()
 
+
 def listar_categorias():
     con = conexao()
     con.row_factory = sqlite3.Row
@@ -28,15 +28,19 @@ def listar_categorias():
     finally:
         con.close()
 
+
 def atualizar_categoria(id, nome):
     con = conexao()
     try:
         cur = con.cursor()
-        cur.execute("""
+        cur.execute(
+            """
             UPDATE Categorias 
             SET nome = ?
             WHERE id = ?
-        """, (nome, id))
+        """,
+            (nome, id),
+        )
         con.commit()
         return "Categoria atualizada com sucesso!"
     except Exception as e:
@@ -44,6 +48,7 @@ def atualizar_categoria(id, nome):
         return f"Erro ao atualizar Categoria: {str(e)}"
     finally:
         con.close()
+
 
 def deletar_categoria(id):
     con = conexao()
