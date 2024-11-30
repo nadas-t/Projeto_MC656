@@ -13,6 +13,7 @@ class Gastos:
     def __post_init__(self):
         pass  # TODO adicionar validação dos campos
 
+
 class GastosDB:
 
     def __init__(self):
@@ -33,6 +34,7 @@ class GastosDB:
         
 
     def atualizar_gasto(self, categoria_nome, gasto: Gastos):
+
         with DBTransactionManager() as db_manager:
             db_manager.executar_transacao(
                 comando="UPDATE Gastos SET data = ?, valor = ? WHERE id = ?",
@@ -51,6 +53,7 @@ class GastosDB:
                 resultado = self.recuperar_gasto(gastos.id, CPF)
             else:
                 resultado = self.recuperar_gastos_registrados(CPF)
+
             if resultado:
                 gastos = [
                     self.converter_consulta_de_gastos_em_objeto(row)
@@ -77,6 +80,7 @@ class GastosDB:
                 "JOIN Categorias ON Gastos.categoria_id = Categorias.id " 
                 "WHERE Gastos.usuario_id = ? ORDER BY data_insercao DESC",
             params=(CPF,)
+
         )
         return gastos
 
@@ -104,6 +108,7 @@ class GastosDB:
                 ]
                 return gastos
             return []
+
 
     def deletar_gasto(self, gasto_id):
         with DBTransactionManager() as db_manager:

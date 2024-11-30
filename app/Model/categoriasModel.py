@@ -39,12 +39,14 @@ class CategoriasDB:
         categoria_encontrada = self._db.executar_transacao(
             comando="SELECT id FROM Categorias WHERE nome = ? AND usuarios_id = ?",
             params=(categoria.nome, CPF),
+
             fetchone=True,
         )
         return categoria_encontrada
 
     def resgatar_categoria_registrada(self, categoria: Categorias, CPF):
         categoria_encontrada = self.resgatar_categoria(categoria, CPF)
+
         if not categoria_encontrada:
             raise CategoriaNaoRegistrada(
                 f'A categoria "{categoria.nome}" ainda não está '
@@ -57,6 +59,7 @@ class CategoriasDB:
             categoria = self.resgatar_categoria_registrada(categoria, CPF)
         except CategoriaNaoRegistrada:
             categoria = self.adicionar_categoria(categoria, CPF)
+
         categoria_id = categoria[0]
         return categoria_id
 

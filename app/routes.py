@@ -19,6 +19,7 @@ def index():
         gastos = dashboard.gastos_mes(session['CPF'])
         
         return render_template("index.html", saldo = saldo, gastos = gastos, movimentacoes = movimentacoes)
+
     else:
         return redirect(url_for("login"))
 
@@ -67,6 +68,7 @@ def autenticar():
         session['username'] = result_list[1]
         session['email'] = email
         session['senha'] = senha
+
     else:
         flash("Usuário e/ou senha incorretos!")
 
@@ -95,6 +97,7 @@ def configuracao_conta():
         row = usuarioController.UsuariosController.login(session['email'], session['senha'])
         
         return render_template('usuario/configuracao_conta.html', row=row)
+
 
     return redirect(url_for("login"))
 
@@ -134,6 +137,7 @@ def add_salario():
             salario = request.form.get('salario')  
             horas_trabalho = request.form.get('horas_trabalho')
 
+
             resultado = usuarioController.UsuariosController.adicionarSalario(session['CPF'], salario, horas_trabalho)
             flash(resultado)
             return redirect('/salario')
@@ -142,7 +146,11 @@ def add_salario():
             row = usuarioController.UsuariosController.login(session['email'], session['senha'])            
             return render_template('usuario/salario.html', row=row)
 
-    return redirect(url_for('login')) 
+
+        if "username" in session:
+            return render_template("usuario/trocar_senha.html")
+
+    return redirect(url_for("login"))
 
 
 # Rotas para Gastos
@@ -158,6 +166,7 @@ def gastos():
     return GastosController.get_gastos(session['CPF'])
 
 
+
 @app.route("/gastos/edit/<int:gasto_id>", methods=["GET", "POST"])
 def edit_gasto(gasto_id):
     return GastosController.update_gasto(gasto_id, session['CPF'])
@@ -166,6 +175,7 @@ def edit_gasto(gasto_id):
 @app.route("/gastos/delete/<int:gasto_id>", methods=["POST"])
 def delete_gasto(gasto_id):
     return GastosController.delete_gasto(gasto_id)
+
 
 @app.route("/convert_gasto", methods=["GET", "POST"])
 def convert_gasto():

@@ -32,6 +32,7 @@ class GastosController:
         gasto_db = GastosDB()
         categoria = Categorias(nome=categoria_nome)
         gasto_db.registrar_gasto_com_transacao(gasto, categoria, CPF)
+
         return redirect("/gastos")
 
     def update_gasto(gasto_id, CPF):
