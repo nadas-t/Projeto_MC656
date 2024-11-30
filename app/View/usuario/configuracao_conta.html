@@ -28,21 +28,21 @@
       <form class="forms-sample" method="POST" action="/configuracao_conta">
         <div class="form-group">
           <label for="CPF">CPF</label>
-          <input type="text" class="form-control" id="CPF" name="CPF" placeholder="Digite o seu CPF" value="{{row["CPF"] }}">
+          <input type="text" class="form-control" id="CPF" name="CPF" placeholder="Digite o seu CPF" value="{{row[0] }}">
 
         </div>
         <div class="form-group">
           <label for="nome">Nome</label>
-          <input type="text" class="form-control" id="nome" name="nome" placeholder="Digite o seu nome" value="{{row["nome"] }}">
-          
+          <input type="text" class="form-control" id="nome" name="nome" placeholder="Digite o seu nome" value="{{row[1] }}">
         </div>
         <div class="form-group">
           <label for="idade">Idade</label>
-          <input type="text" class="form-control" id="idade" name="idade" placeholder="Digite a sua idade" value="{{row["idade"] }}">
+
+          <input type="text" class="form-control" id="idade" name="idade" placeholder="Digite a sua idade" value="{{row[2] }}">
         </div>
         <div class="form-group">
           <label for="email">Email</label>
-          <input type="email" class="form-control" id="email" name="email" placeholder="Digite o seu email" value="{{row["email"] }}">
+          <input type="email" class="form-control" id="email" name="email" placeholder="Digite o seu email" value="{{row[3] }}">
         </div>
         <div class="form-group">
           <label for="genero">Gênero</label>
