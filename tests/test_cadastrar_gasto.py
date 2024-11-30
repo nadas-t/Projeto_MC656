@@ -1,77 +1,83 @@
 import unittest
 from unittest.mock import patch, MagicMock
-from app.Model.gastosModel import GastosDB, Gastos, Categorias
+from app.Model.gastosModel import Gastos, GastosDB
+from app.Model.categoriasModel import Categorias
 
 
 class TestGastosDB(unittest.TestCase):
-    @patch("app.Model.databaseManager.BaseDB")
-    def test_adicionar_gasto_com_categoria_existente(self, mock_base_db):
+
+    @patch("app.Model.gastosModel.DBTransactionManager")
+    @patch("app.Model.gastosModel.CategoriasDB")
+    @patch("app.Model.gastosModel.BaseDB")
+    def test_registrar_gasto_com_categoria_existente(
+        self, mock_basedb, mock_categoriasdb, mock_transaction
+    ):
         mock_db = MagicMock()
-        mock_base_db.return_value = mock_db
-        mock_db.executar_transacao.side_effect = [
-            (1,),
-        ]
+        mock_categorias = MagicMock()
 
-        db = GastosDB()
+        # Mocking the database and category behavior
+        mock_basedb.return_value = mock_db
+        mock_categoriasdb.return_value = mock_categorias
+        mock_categorias.vincular_categoria.return_value = 1  # Categoria já existe
+
+        gastos_db = GastosDB()
         gasto = Gastos(data="2024-09-26", valor=100.50)
-        categoria = Categorias(nome="Transporte")
-        resultado = db.adicionar_gasto(gasto, categoria)
 
-        mock_db.executar_transacao.assert_any_call(
-            comando="SELECT id FROM Categorias WHERE nome = ?",
-            params=("Transporte",),
-            fetchone=True,
+        gastos_db.registrar_gasto_com_transacao(gasto, Categorias(nome="Transporte"))
+
+        mock_categorias.vincular_categoria.assert_called_with(
+            Categorias(nome="Transporte")
         )
-        mock_db.executar_transacao.assert_any_call(
+        mock_db.executar_transacao.assert_called_with(
             comando="INSERT INTO Gastos (data, valor, categoria_id) VALUES (?, ?, ?)",
             params=("2024-09-26", 100.50, 1),
         )
-        self.assertEqual(resultado, "Gasto adicionado com sucesso!")
 
-    @patch("app.Model.databaseManager.BaseDB")
-    def test_adicionar_gasto_com_categoria_nova(self, mock_base_db):
+    @patch("app.Model.gastosModel.DBTransactionManager")
+    @patch("app.Model.gastosModel.CategoriasDB")
+    @patch("app.Model.gastosModel.BaseDB")
+    def test_registrar_gasto_com_categoria_nova(
+        self, mock_basedb, mock_categoriasdb, mock_transaction
+    ):
         mock_db = MagicMock()
-        mock_base_db.return_value = mock_db
-        mock_db.executar_transacao.side_effect = [
-            None,
-            None,
-            (4,),
-        ]
+        mock_categorias = MagicMock()
 
-        db = GastosDB()
+        # Mocking the database and category behavior
+        mock_basedb.return_value = mock_db
+        mock_categoriasdb.return_value = mock_categorias
+        mock_categorias.vincular_categoria.return_value = 4  # Nova categoria
+
+        gastos_db = GastosDB()
         gasto = Gastos(data="2024-09-26", valor=100.50)
-        categoria = Categorias(nome="Viagem")
-        resultado = db.adicionar_gasto(gasto, categoria)
 
-        mock_db.executar_transacao.assert_any_call(
-            comando="SELECT id FROM Categorias WHERE nome = ?",
-            params=("Viagem",),
-            fetchone=True,
-        )
-        mock_db.executar_transacao.assert_any_call(
+        gastos_db.registrar_gasto_com_transacao(gasto, Categorias(nome="Viagem"))
+
+        mock_categorias.vincular_categoria.assert_called_with(Categorias(nome="Viagem"))
+        mock_db.executar_transacao.assert_called_with(
             comando="INSERT INTO Gastos (data, valor, categoria_id) VALUES (?, ?, ?)",
             params=("2024-09-26", 100.50, 4),
         )
-        self.assertEqual(resultado, "Gasto adicionado com sucesso!")
 
-    @patch("app.Model.databaseManager.BaseDB")
-    def test_listar_gasto_especificado(self, mock_base_db):
+    @patch("app.Model.gastosModel.DBTransactionManager")
+    @patch("app.Model.gastosModel.BaseDB")
+    def test_listar_gasto_especificado(self, mock_basedb, mock_transaction):
         mock_db = MagicMock()
-        mock_base_db.return_value = mock_db
+        mock_basedb.return_value = mock_db
+
+        # Mocking query results
         mock_db.executar_transacao.return_value = [
-            (1, "2024-09-26", 100.50, "Transporte"),
+            (1, "2024-09-26", 100.50, "Transporte")
         ]
 
-        db = GastosDB()
+        gastos_db = GastosDB()
         gasto = Gastos(id=1)
-        resultado = db.listar_gastos(gasto)
+
+        resultado = gastos_db.listar_gastos(gasto)
 
         mock_db.executar_transacao.assert_called_with(
-            comando=(
-                "SELECT Gastos.id AS gasto_id, data, valor, Categorias.nome AS categoria_nome "
-                "FROM Gastos "
-                "JOIN Categorias ON Gastos.categoria_id = Categorias.id WHERE gasto_id = ?"
-            ),
+            comando="SELECT Gastos.id AS gasto_id, data, valor, Categorias.nome AS categoria_nome "
+            "FROM Gastos "
+            "JOIN Categorias ON Gastos.categoria_id = Categorias.id WHERE gasto_id = ?",
             params=(1,),
         )
         self.assertEqual(
@@ -86,24 +92,27 @@ class TestGastosDB(unittest.TestCase):
             ],
         )
 
-    @patch("app.Model.databaseManager.BaseDB")
-    def test_listar_todos_os_gastos(self, mock_base_db):
+    @patch("app.Model.gastosModel.DBTransactionManager")
+    @patch("app.Model.gastosModel.BaseDB")
+    def test_listar_todos_os_gastos(self, mock_basedb, mock_transaction):
         mock_db = MagicMock()
-        mock_base_db.return_value = mock_db
+        mock_basedb.return_value = mock_db
+
+        # Mocking query results
         mock_db.executar_transacao.return_value = [
             (1, "2024-09-26", 100.50, "Transporte"),
-            (2, "2024-08-12", 110.50, "Alimentação"),
+            (2, "2024-08-12", 110.50, "Viagem"),
         ]
 
-        db = GastosDB()
-        resultado = db.listar_gastos(Gastos())
+        gastos_db = GastosDB()
+        gasto = Gastos()
+
+        resultado = gastos_db.listar_gastos(gasto)
 
         mock_db.executar_transacao.assert_called_with(
-            comando=(
-                "SELECT Gastos.id AS gasto_id, data, valor, Categorias.nome AS categoria_nome "
-                "FROM Gastos "
-                "JOIN Categorias ON Gastos.categoria_id = Categorias.id"
-            ),
+            comando="SELECT Gastos.id AS gasto_id, data, valor, Categorias.nome AS categoria_nome "
+            "FROM Gastos "
+            "JOIN Categorias ON Gastos.categoria_id = Categorias.id"
         )
         self.assertEqual(
             resultado,
@@ -118,7 +127,7 @@ class TestGastosDB(unittest.TestCase):
                     "id": 2,
                     "data": "2024-08-12",
                     "valor": 110.50,
-                    "categoria_nome": "Alimentação",
+                    "categoria_nome": "Viagem",
                 },
             ],
         )
