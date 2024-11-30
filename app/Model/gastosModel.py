@@ -22,7 +22,6 @@ class GastosDB:
         self._categoriaBD = CategoriasDB()
 
     def registrar_gasto_com_transacao(self, gasto: Gastos, categorias: Categorias):
-        breakpoint()
         with DBTransactionManager():
             categoria_id = self._categoriaBD.vincular_categoria(categorias)
             self.registrar_gasto(categoria_id, gasto)
@@ -33,16 +32,16 @@ class GastosDB:
             params=(gasto.data, gasto.valor, categoria),
         )
 
-    def atualizar_gasto(self, gasto_id, categoria_nome, gasto: Gastos):
+    def atualizar_gasto(self, categoria_nome, gasto: Gastos):
         with DBTransactionManager() as db_manager:
             db_manager.executar_transacao(
                 comando="UPDATE Gastos SET data = ?, valor = ? WHERE id = ?",
-                params=(gasto.data, gasto.valor, gasto_id),
+                params=(gasto.data, gasto.valor, gasto.id),
             )
 
             db_manager.executar_transacao(
                 comando="UPDATE Categorias SET nome = ? WHERE id = (SELECT categoria_id FROM Gastos WHERE id = ? LIMIT 1);",
-                params=(categoria_nome, gasto_id),
+                params=(categoria_nome, gasto.id),
             )
 
         return "Gasto atualizado com sucesso!"
