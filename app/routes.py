@@ -143,17 +143,17 @@ def add_salario():
 def gastos():
     if request.method == "POST":
         if "adicionar_gasto" in request.form:
-            return GastosController.add_gasto()
+            return GastosController.add_gasto(session['CPF'])
 
         elif "converter_gasto" in request.form:
             return redirect("/convert_gasto")
 
-    return GastosController.get_gastos()
+    return GastosController.get_gastos(session['CPF'])
 
 
 @app.route("/gastos/edit/<int:gasto_id>", methods=["GET", "POST"])
 def edit_gasto(gasto_id):
-    return GastosController.update_gasto(gasto_id)
+    return GastosController.update_gasto(gasto_id, session['CPF'])
 
 
 @app.route("/gastos/delete/<int:gasto_id>", methods=["POST"])

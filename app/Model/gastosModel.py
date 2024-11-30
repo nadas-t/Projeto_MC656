@@ -20,15 +20,15 @@ class GastosDB:
         self._db = BaseDB()
         self._categoriaBD = CategoriasDB()
 
-    def registrar_gasto_com_transacao(self, gasto: Gastos, categorias: Categorias):
+    def registrar_gasto_com_transacao(self, gasto: Gastos, categorias: Categorias, CPF):
         with DBTransactionManager():
             categoria_id = self._categoriaBD.vincular_categoria(categorias)
-            self.registrar_gasto(categoria_id, gasto)
+            self.registrar_gasto(categoria_id, gasto, CPF)
 
-    def registrar_gasto(self, categoria, gasto):
+    def registrar_gasto(self, categoria, gasto, CPF):
         self._db.executar_transacao(
-            comando="INSERT INTO Gastos (data, valor, categoria_id) VALUES (?, ?, ?)",
-            params=(gasto.data, gasto.valor, categoria),
+            comando="INSERT INTO Gastos (data, valor, categoria_id, usuario_id) VALUES (?, ?, ?, ?)",
+            params=(gasto.data, gasto.valor, categoria, CPF),
         )
 
     def atualizar_gasto(self, categoria_nome, gasto: Gastos):
@@ -45,12 +45,12 @@ class GastosDB:
 
         return "Gasto atualizado com sucesso!"
 
-    def listar_gastos(self, gastos: Gastos):
+    def listar_gastos(self, gastos: Gastos, CPF):
         with DBTransactionManager():
             if gastos.id is not None:
-                resultado = self.recuperar_gasto(gastos.id)
+                resultado = self.recuperar_gasto(gastos.id, CPF)
             else:
-                resultado = self.recuperar_gastos_registrados()
+                resultado = self.recuperar_gastos_registrados(CPF)
             if resultado:
                 gastos = [
                     self.converter_consulta_de_gastos_em_objeto(row)
@@ -59,20 +59,21 @@ class GastosDB:
                 return gastos
             return []
 
-    def recuperar_gasto(self, gasto_id: int):
+    def recuperar_gasto(self, gasto_id: int, CPF):
         gasto = self._db.executar_transacao(
             comando="SELECT Gastos.id AS gasto_id, data, valor, Categorias.nome AS categoria_nome "
             "FROM Gastos "
-            "JOIN Categorias ON Gastos.categoria_id = Categorias.id WHERE gasto_id = ?",
-            params=(gasto_id,),
+            "JOIN Categorias ON Gastos.categoria_id = Categorias.id WHERE gasto_id = ? AND usuario_id = ?",
+            params=(gasto_id, CPF)
         )
         return gasto
 
-    def recuperar_gastos_registrados(self):
+    def recuperar_gastos_registrados(self, CPF):
         gastos = self._db.executar_transacao(
-            comando="SELECT Gastos.id AS gasto_id, data, valor, Categorias.nome AS categoria_nome "
+            comando="SELECT Gastos.id AS gasto_id, data, valor, Categorias.nome AS categoria_nome " 
             "FROM Gastos "
-            "JOIN Categorias ON Gastos.categoria_id = Categorias.id"
+            "JOIN Categorias ON Gastos.categoria_id = Categorias.id AND usuario_id = ?",
+            params=(CPF,)
         )
         return gastos
 
