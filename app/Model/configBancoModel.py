@@ -36,7 +36,10 @@ class InstanciadorDB:
                     nome TEXT NOT NULL, 
                     idade INTEGER NOT NULL, 
                     email TEXT UNIQUE NOT NULL,
-                    senha TEXT NOT NULL
+                    senha TEXT NOT NULL,
+                    limite REAL,
+                    salario REAL,
+                    horas_trabalho REAL
                 )"""
         )
 

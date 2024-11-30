@@ -12,9 +12,6 @@ from app.Model.gastosModel import (
     Categorias,
 )
 
-from app.Controller.salarioController import *
-
-
 class GastosController:
     # Static variable initialized as 0
     exibir_em_horas = 0
@@ -28,7 +25,7 @@ class GastosController:
             "gastos.html",
             gastos=gastos,
             exibir_horas=GastosController.exibir_em_horas,
-            salario_hora=SalarioController.get_salario_hora(),
+            salario_hora=87,
         )
 
     @staticmethod

@@ -3,8 +3,7 @@ from flask import render_template, request, flash, redirect, url_for, session
 from app.Controller import categoriasController
 from app.Controller import usuarioController
 from app.Controller.usuarioController import *
-from app.Controller.gastosController import GastosController, SalarioController
-from app.Controller.salarioController import *
+from app.Controller.gastosController import GastosController
 
 @app.route('/')
 @app.route('/index')
@@ -51,11 +50,10 @@ def registrar():
 def autenticar():
     email  = request.form.get('email')
     senha  = request.form.get('senha')
-
-
     result_list = usuarioController.UsuariosController.login(email, senha)  # Presume-se que verificarUsuario retorna uma lista
     
     if result_list:
+        session['CPF'] = result_list[0]
         session['username'] = result_list[1]
         session['email'] = email
         session['senha'] = senha
@@ -71,19 +69,20 @@ def configuracao_conta():
             CPF = request.form.get('CPF')
             nome = request.form.get('nome')  
             idade = request.form.get('idade')
-            email = request.form.get('email')   
-
-            resultado = usuarioController.UsuariosController.atualizarUsuario(CPF, nome, idade, email, session['senha'])
+            email = request.form.get('email')
+            salario = request.form.get('salario')
+            limite = request.form.get('limite')
+            horas_trabalho = request.form.get('horas_trabalho')
+            
+            resultado = usuarioController.UsuariosController.atualizarUsuario(CPF, nome, idade, email, session['senha'], salario, limite, horas_trabalho)
             session['email'] = email
             session['username'] = nome
 
             flash(resultado)
             return redirect('/configuracao_conta')
         
-        result_list = usuarioController.UsuariosController.login(session['email'], session['senha'])
+        row = usuarioController.UsuariosController.login(session['email'], session['senha'])
         
-        row = result_list
-
         return render_template('usuario/configuracao_conta.html', row=row)
 
     return redirect(url_for('login'))
@@ -108,6 +107,26 @@ def trocar_senha():
         
         if 'username' in session:
             return render_template('usuario/trocar_senha.html')
+
+    return redirect(url_for('login')) 
+
+@app.route('/salario', methods=['GET', 'POST'])
+def add_salario():
+
+    if 'username' in session:
+        
+        if request.method == 'POST':
+            
+            salario = request.form.get('salario')  
+            horas_trabalho = request.form.get('horas_trabalho')
+
+            resultado = usuarioController.UsuariosController.adicionarSalario(session['CPF'], salario, horas_trabalho)
+            flash(resultado)
+            return redirect('/salario')
+        
+        if 'username' in session:
+            row = usuarioController.UsuariosController.login(session['email'], session['senha'])            
+            return render_template('usuario/salario.html', row=row)
 
     return redirect(url_for('login')) 
 
@@ -156,12 +175,3 @@ def edit_categoria(categoria_id):
 @app.route('/categorias/delete/<int:categoria_id>', methods=['POST'])
 def delete_categoria(categoria_id):
     return categoriasController.delete_categoria(categoria_id)
-
-
-# Rotas para Salário
-@app.route('/salario', methods=['GET', 'POST'])
-def salario():
-    if request.method == 'POST':
-        return SalarioController.add_salario()
-
-    return SalarioController.get_salario()

@@ -10,6 +10,9 @@ class Usuario:
     email: str = None
     senha: str = None
     idade: int = None
+    salario: float = None
+    limite: float = None
+    horas_trabalho: float = None
     CPF: int = None  # Alterar para str
 
     def __post_init__(self):
@@ -41,8 +44,8 @@ class UsuarioDB:
     def atualizar(self, usuario: Usuario):
             with DBTransactionManager() as db_manager:
                 db_manager.executar_transacao(
-                    comando="UPDATE Usuario SET nome = ?, idade = ?, email = ?, senha = ? WHERE CPF = ?",
-                    params=(usuario.nome, usuario.idade, usuario.email, usuario.senha, usuario.CPF),
+                    comando="UPDATE Usuario SET nome = ?, idade = ?, email = ?, senha = ?, salario = ?, limite = ?, horas_trabalho = ? WHERE CPF = ?",
+                    params=(usuario.nome, usuario.idade, usuario.email, usuario.senha, usuario.salario, usuario.limite, usuario.horas_trabalho, usuario.CPF),
                 )
             return "Usuário atualizado com sucesso!"  # Mensagem de sucesso
         
@@ -54,3 +57,11 @@ class UsuarioDB:
                     params=(usuario.senha, usuario.CPF),
                 )
             return "Senha atualizada com sucesso!"  # Mensagem de sucesso
+        
+    def adicionarSalario(self, usuario: Usuario):
+        with DBTransactionManager() as db_manager:
+            db_manager.executar_transacao(
+            comando="UPDATE Usuario SET salario = ?, horas_trabalho = ? WHERE CPF = ?",
+                params=(usuario.salario, usuario.horas_trabalho, usuario.CPF),
+            )
+        return "Dados financeiros inseridos com sucesso!"  # Mensagem de sucesso
