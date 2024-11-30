@@ -22,7 +22,6 @@ class GastosDB:
         self._categoriaBD = CategoriasDB()
 
     def registrar_gasto_com_transacao(self, gasto: Gastos, categorias: Categorias):
-        breakpoint()
         with DBTransactionManager():
             categoria_id = self._categoriaBD.vincular_categoria(categorias)
             self.registrar_gasto(categoria_id, gasto)
