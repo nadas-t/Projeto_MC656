@@ -3,7 +3,6 @@ from app.Model.categoriasModel import Categorias
 from app.Model.databaseManager import DBTransactionManager, BaseDB
 from app.Model.categoriasModel import CategoriasDB
 
-
 @dataclass
 class Gastos:
     data: str = None
