@@ -31,6 +31,22 @@ class InstanciadorDB:
             )
                 """
         )
+        
+    def gerar_tabela_de_receitas(self):
+        self._db.executar_transacao(
+            comando="""
+            CREATE TABLE IF NOT EXISTS Receitas (
+                id INTEGER PRIMARY KEY,         
+                data TEXT NOT NULL,             
+                valor REAL NOT NULL,           
+                categoria_id INTEGER,          
+                usuario_id INTEGER,            
+                FOREIGN KEY (categoria_id) REFERENCES Categorias (id),  
+                FOREIGN KEY (usuario_id) REFERENCES Usuario (CPF)       
+            )
+                """
+        )
+    
 
     def gerar_tabela_de_usuarios(self):
         self._db.executar_transacao(
@@ -51,4 +67,5 @@ class InstanciadorDB:
         with DBTransactionManager():
             self.gerar_tabela_de_categorias()
             self.gerar_tabela_de_gastos()
+            self.gerar_tabela_de_receitas()
             self.gerar_tabela_de_usuarios()

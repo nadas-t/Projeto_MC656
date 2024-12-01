@@ -4,6 +4,7 @@ from app.Controller import categoriasController
 from app.Controller import usuarioController
 from app.Controller.usuarioController import *
 from app.Controller.gastosController import GastosController
+from app.Controller.receitasController import ReceitasController
 
 
 @app.route("/")
@@ -160,7 +161,6 @@ def edit_gasto(gasto_id):
 def delete_gasto(gasto_id):
     return GastosController.delete_gasto(gasto_id)
 
-
 @app.route("/convert_gasto", methods=["GET", "POST"])
 def convert_gasto():
     if GastosController.exibir_em_horas == 0:
@@ -168,6 +168,37 @@ def convert_gasto():
     elif GastosController.exibir_em_horas == 1:
         GastosController.exibir_em_horas = 0
     return redirect(url_for("gastos"))  # Redirect back to the gastos page
+
+
+# Rotas para Receitas
+@app.route("/receitas", methods=["GET", "POST"])
+def receitas():
+    if request.method == "POST":
+        if "adicionar_receita" in request.form:
+            return ReceitasController.add_receita(session['CPF'])
+
+        elif "converter_receita" in request.form:
+            return redirect("/convert_receita")
+
+    return ReceitasController.get_receitas(session['CPF'])
+
+
+@app.route("/receitas/edit/<int:receita_id>", methods=["GET", "POST"])
+def edit_receita(receita_id):
+    return ReceitasController.update_receita(receita_id, session['CPF'])
+
+
+@app.route("/receitas/delete/<int:receita_id>", methods=["POST"])
+def delete_receita(receita_id):
+    return ReceitasController.delete_receita(receita_id)
+
+@app.route("/convert_receita", methods=["GET", "POST"])
+def convert_receita():
+    if ReceitasController.exibir_em_horas == 0:
+        ReceitasController.exibir_em_horas = 1
+    elif ReceitasController.exibir_em_horas == 1:
+        ReceitasController.exibir_em_horas = 0
+    return redirect(url_for("receitas"))  # Redirect back to the gastos page
 
 
 # Rotas para Categorias
