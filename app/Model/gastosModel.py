@@ -22,7 +22,7 @@ class GastosDB:
 
     def registrar_gasto_com_transacao(self, gasto: Gastos, categorias: Categorias, CPF):
         with DBTransactionManager():
-            categoria_id = self._categoriaBD.vincular_categoria(categorias)
+            categoria_id = self._categoriaBD.vincular_categoria(categorias, CPF)
             self.registrar_gasto(categoria_id, gasto, CPF)
 
     def registrar_gasto(self, categoria, gasto, CPF):
@@ -61,18 +61,21 @@ class GastosDB:
 
     def recuperar_gasto(self, gasto_id: int, CPF):
         gasto = self._db.executar_transacao(
+            
             comando="SELECT Gastos.id AS gasto_id, data, valor, Categorias.nome AS categoria_nome "
-            "FROM Gastos "
-            "JOIN Categorias ON Gastos.categoria_id = Categorias.id WHERE gasto_id = ? AND usuario_id = ?",
+                "FROM Gastos " 
+                "JOIN Categorias ON Gastos.categoria_id = Categorias.id " 
+                "WHERE gasto_id = ? AND Gastos.usuario_id = ? ",
             params=(gasto_id, CPF)
         )
         return gasto
 
     def recuperar_gastos_registrados(self, CPF):
         gastos = self._db.executar_transacao(
-            comando="SELECT Gastos.id AS gasto_id, data, valor, Categorias.nome AS categoria_nome " 
-            "FROM Gastos "
-            "JOIN Categorias ON Gastos.categoria_id = Categorias.id AND usuario_id = ?",
+            comando="SELECT Gastos.id AS gasto_id, data, valor, Categorias.nome AS categoria_nome "
+                "FROM Gastos " 
+                "JOIN Categorias ON Gastos.categoria_id = Categorias.id " 
+                "WHERE Gastos.usuario_id = ?",
             params=(CPF,)
         )
         return gastos

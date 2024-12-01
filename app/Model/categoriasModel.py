@@ -27,24 +27,24 @@ class CategoriasDB:
     def __init__(self):
         self._db = BaseDB()
 
-    def adicionar_categoria(self, categoria: Categorias):
+    def adicionar_categoria(self, categoria: Categorias, CPF):
         self._db.executar_transacao(
-            comando="INSERT INTO Categorias (nome) VALUES (?)",
-            params=(categoria.nome,),
+            comando="INSERT INTO Categorias (nome, usuarios_id) VALUES (?, ?)",
+            params=(categoria.nome, CPF),
         )
-        nova_categoria = self.resgatar_categoria(categoria)
+        nova_categoria = self.resgatar_categoria(categoria, CPF)
         return nova_categoria
 
-    def resgatar_categoria(self, categoria: Categorias):
+    def resgatar_categoria(self, categoria: Categorias, CPF):
         categoria_encontrada = self._db.executar_transacao(
-            comando="SELECT id FROM Categorias WHERE nome = ?",
-            params=(categoria.nome,),
+            comando="SELECT id FROM Categorias WHERE nome = ? AND usuarios_id = ?",
+            params=(categoria.nome, CPF),
             fetchone=True,
         )
         return categoria_encontrada
 
-    def resgatar_categoria_registrada(self, categoria: Categorias):
-        categoria_encontrada = self.resgatar_categoria(categoria)
+    def resgatar_categoria_registrada(self, categoria: Categorias, CPF):
+        categoria_encontrada = self.resgatar_categoria(categoria, CPF)
         if not categoria_encontrada:
             raise CategoriaNaoRegistrada(
                 f'A categoria "{categoria.nome}" ainda não está '
@@ -52,11 +52,11 @@ class CategoriasDB:
             )
         return categoria_encontrada
 
-    def vincular_categoria(self, categoria: Categorias):
+    def vincular_categoria(self, categoria: Categorias, CPF):
         try:
-            categoria = self.resgatar_categoria_registrada(categoria)
+            categoria = self.resgatar_categoria_registrada(categoria, CPF)
         except CategoriaNaoRegistrada:
-            categoria = self.adicionar_categoria(categoria)
+            categoria = self.adicionar_categoria(categoria, CPF)
         categoria_id = categoria[0]
         return categoria_id
 

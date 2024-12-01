@@ -8,10 +8,12 @@ class InstanciadorDB:
     def gerar_tabela_de_categorias(self):
         self._db.executar_transacao(
             comando="""
-                CREATE TABLE IF NOT EXISTS categorias (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    nome TEXT NOT NULL UNIQUE
-                )
+            CREATE TABLE IF NOT EXISTS categorias (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome TEXT NOT NULL,
+                usuarios_id INTEGER,
+                FOREIGN KEY (usuarios_id) REFERENCES Usuario (CPF)
+            );
                 """
         )
 
