@@ -1,5 +1,6 @@
 from app.Model.usuarioModel import *
 from flask import request
+import re
 
 class UsuariosController:
     @staticmethod
@@ -12,6 +13,12 @@ class UsuariosController:
         senha1 = request.form.get('senha1')        
         senha2 = request.form.get('senha2')
         
+        
+         # Restrições para a senha
+        resultado,erros=UsuariosController.validar_senha(senha1)
+        if not resultado:
+            return "\n".join(erros)
+        
         if senha1 != senha2:
             return "As senhas não coincidem"
 
@@ -19,6 +26,27 @@ class UsuariosController:
         usuario_db = UsuarioDB()
         resultado = usuario_db.adicionar(usuario)
         return resultado
+    
+    @staticmethod
+    def validar_senha(senha):
+        erros=[]
+        if len(senha) < 8:
+            erros.append("Sua senha deve ter 8 ou mais caracteres.")
+            
+        if not re.search(r'[A-Z]', senha):
+            erros.append("Sua senha deve ter ao menos 1 letra maiúscula.")
+            
+        if not re.search(r'[0-9]', senha):
+            erros.append("Sua senha deve ter ao menos 1 número.")
+            
+        if not re.search(r'[\W_]', senha):  # O padrão \W corresponde a qualquer caractere não alfanumérico (exceto _)
+            erros.append("Sua senha deve ter ao menos 1 caractere especial.")
+    
+        if erros:
+            return False, erros
+        
+        # Se não houver erros, retorna True
+        return True, []
     
     @staticmethod
     def login(email, senha):
