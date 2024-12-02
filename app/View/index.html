@@ -11,7 +11,7 @@
           <div class="col-8 col-sm-12 col-xl-8 my-auto">
             <div class="d-flex d-sm-block d-md-flex align-items-center">
               <h2 class="mb-0">{{saldo}}</h2>
-              <p class="text-success ml-2 mb-0 font-weight-medium">+3.5%</p>
+              <p class="text-success ml-2 mb-0 font-weight-medium">positivo</p>
             </div>
             <h6 class="text-muted font-weight-normal">saldo atual cadastrado</h6>
           </div>
@@ -196,116 +196,44 @@
   <div class="col-12 grid-margin">
     <div class="card">
       <div class="card-body">
-        <h4 class="card-title">Ultimas movimentações</h4>
-        <p class="card-description"> Histórico das ultimas movimentações
-        </p>
+        <h4 class="card-title">Últimas Movimentações</h4>
+        <p class="card-description">Histórico das últimas movimentações</p>
         <div class="table-responsive">
           <table class="table table-hover">
-            {% if movimentacoes|length < 1 %} <h4 class="card-title">Você ainda não registrou nenhuma movimentação.</h4>
-              {% else %}
+            {% if movimentacoes|length < 1 %}
+              <h4 class="card-title">Você ainda não registrou nenhuma movimentação.</h4>
+            {% else %}
               <thead>
                 <tr>
-                  <th>User</th>
-                  <th>Product</th>
-                  <th>Sale</th>
-                  <th>Status</th>
+                  <th>Data</th>
+                  <th>Valor</th>
+                  <th>Categoria</th>
+                  <th>Tipo</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>Jacob</td>
-                  <td>Photoshop</td>
-                  <td class="text-danger"> 28.76% <i class="mdi mdi-arrow-down"></i></td>
-                  <td><label class="badge badge-danger">Pending</label></td>
-                </tr>
-                <tr>
-                  <td>Messsy</td>
-                  <td>Flash</td>
-                  <td class="text-danger"> 21.06% <i class="mdi mdi-arrow-down"></i></td>
-                  <td><label class="badge badge-warning">In progress</label></td>
-                </tr>
-                <tr>
-                  <td>John</td>
-                  <td>Premier</td>
-                  <td class="text-danger"> 35.00% <i class="mdi mdi-arrow-down"></i></td>
-                  <td><label class="badge badge-info">Fixed</label></td>
-                </tr>
-                <tr>
-                  <td>Peter</td>
-                  <td>After effects</td>
-                  <td class="text-success"> 82.00% <i class="mdi mdi-arrow-up"></i></td>
-                  <td><label class="badge badge-success">Completed</label></td>
-                </tr>
-                <tr>
-                  <td>Dave</td>
-                  <td>53275535</td>
-                  <td class="text-success"> 98.05% <i class="mdi mdi-arrow-up"></i></td>
-                  <td><label class="badge badge-warning">In progress</label></td>
-                </tr>
+                {% for movimentacao in movimentacoes %}
+                  <tr>
+                    <td>{{ movimentacao.data }}</td>
+                    <td>{{ movimentacao.valor }}</td>
+                    <td>{{ movimentacao.categoria }}</td>
+                    <td>
+                      <label class="badge 
+                        {% if movimentacao.tipo == 'Gasto' %} badge-danger 
+                        {% elif movimentacao.tipo == 'Receita' %} badge-success 
+                        {% endif %}">
+                      {{ movimentacao.tipo }}
+                  </label>
+                    </td>
+                  </tr>
+                {% endfor %}
               </tbody>
-              {% endif %}
-
+            {% endif %}
           </table>
         </div>
       </div>
     </div>
   </div>
 </div>
-
-
-<div class="row">
-  <div class="col-lg-12 grid-margin stretch-card">
-    <div class="card">
-      <div class="card-body">
-
-        <h4 class="card-title">Gastos</h4>
-        {% if gastos|length < 1 %} <h4 class="card-title">Você ainda não registrou nenhum gasto.</h4>
-          {% else %}
-          <div class="table-responsive">
-            <table class="table table-bordered">
-              <tr>
-                <th>Data</th>
-                {%if exibir_horas %}
-                <th>Horas</th>
-                {% else %}
-                <th>Valor</th>
-                {%endif%}
-                <th>Categoria</th>
-                <th>Remover</th>
-                <th>Alterar</th>
-              </tr>
-              {% for gasto in gastos %}
-              <tr>
-                <td>{{ gasto.data }}</td>
-                {%if exibir_horas %}
-                <td>{{ "%.1f"|format((gasto.valor / salario_hora)) }}</td>
-                {% else %}
-                <td>{{ gasto.valor }}</td>
-                {%endif%}
-                <td>{{ gasto.categoria_nome }}</td>
-                <td>
-                  <form action="{{ url_for('delete_gasto', gasto_id=gasto.id) }}" method="post"">
-              <button type=" submit" class="btn btn-danger btn-fw">Deletar</button>
-                  </form>
-                </td>
-                <td>
-                  <form action="{{ url_for('edit_gasto', gasto_id=gasto.id) }}" method="get" style="display:inline;">
-                    <button type="submit" class="btn btn-info btn-fw">Editar</button>
-                  </form>
-                </td>
-
-              </tr>
-              {% endfor %}
-            </table>
-          </div>
-          {% endif %}
-      </div>
-    </div>
-  </div>
-
-</div>
-
-
-
 
 {% endblock %}

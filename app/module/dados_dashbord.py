@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from app.Model.databaseManager import DBTransactionManager, BaseDB
+from datetime import datetime
 
 from app.Model.gastosModel import (
     GastosDB,
@@ -54,13 +55,30 @@ class Dashboard:
                         "ORDER BY g.data_insercao DESC LIMIT 20",
             )
 
-            receitas_objetos = [self.converter_consulta_de_receitas_em_objeto(row) for row in movimentacoes]
-            return receitas_objetos
+            dados = [self.converter_consulta_de_movimentacoes_em_objeto(row) for row in movimentacoes]
+            
+            return dados
 
-    def converter_consulta_de_receitas_em_objeto(self, consulta) -> dict:
+    def converter_consulta_de_movimentacoes_em_objeto(self, consulta) -> dict:
         return {
             "data": consulta[0],
             "valor": consulta[1],
-            "categoia": consulta[2],
+            "categoria": consulta[2],
             "tipo": consulta[3],
         }
+        
+    def gastos_mes(self, CPF):
+
+        valor = 0
+        data_atual = datetime.now()
+        mes_atual = data_atual.strftime('%m')  # '%m' retorna o mês com 2 dígitos
+
+        gasto = Gastos(id=None)
+        gasto_db = GastosDB()
+        gastos = gasto_db.listar_gasto_mes(mes_atual, CPF)
+
+        if gastos and len(gastos) > 0:
+            for gasto in gastos:
+                valor = valor + gasto['valor']
+        
+        return valor

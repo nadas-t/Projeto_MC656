@@ -88,6 +88,22 @@ class GastosDB:
         }
         return gasto
 
+    def listar_gasto_mes(self, mes, CPF):
+        # Open a transaction to ensure the database connection is managed properly
+        with DBTransactionManager() as db_manager:
+            resultado = db_manager.executar_transacao(
+                comando="SELECT * FROM Gastos "
+                        "WHERE strftime('%m', data) = ? AND usuario_id = ?",
+                        params=(mes, CPF)
+            )
+            if resultado:
+                gastos = [
+                    self.converter_consulta_de_gastos_em_objeto(row)
+                    for row in resultado
+                ]
+                return gastos
+            return []
+
     def deletar_gasto(self, gasto_id):
         with DBTransactionManager() as db_manager:
             db_manager.executar_transacao(

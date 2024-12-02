@@ -17,6 +17,7 @@ def index():
         dashboard = Dashboard()
         saldo = dashboard.saldo(session['CPF'])
         movimentacoes = dashboard.movimentacoes(session['CPF'])
+        gastos = dashboard.gastos_mes(session['CPF'])
         
         return render_template("index.html", saldo = saldo, movimentacoes = movimentacoes)
     else:
