@@ -24,7 +24,7 @@ Daniel Henriques Pamplona ra:260401
 
 ## Arquitetura do Projeto
 
-![Diagrama C4 - nível de componente](https://github.com/user-attachments/assets/da89c93d-99c9-4773-bd05-39f2848982bb)
+![Diagrama C4 - nível de componente](![alt text - diagrama C4 a nivel de componentes](image.png))
 
 A estrutura geral do nosso projeto segue o estilo arquitetural **MVC** (Model-View-Controller), que organiza os componentes em três camadas independentes:
 
