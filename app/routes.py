@@ -5,6 +5,8 @@ from app.Controller import usuarioController
 from app.Controller.usuarioController import *
 from app.Controller.gastosController import GastosController, SalarioController
 from app.Controller.salarioController import *
+from app.Controller.limitesController import ExisteLimiteEmAndamento, LimitesController
+from app.Model.limitesModel import DataDeExpiracaoInvalida, ValorInsulficiente
 
 @app.route('/')
 @app.route('/index')
@@ -56,6 +58,7 @@ def autenticar():
     result_list = usuarioController.UsuariosController.login(email, senha)  # Presume-se que verificarUsuario retorna uma lista
     
     if result_list:
+        session['CPF'] = result_list[0]
         session['username'] = result_list[1]
         session['email'] = email
         session['senha'] = senha
@@ -165,3 +168,46 @@ def salario():
         return SalarioController.add_salario()
 
     return SalarioController.get_salario()
+
+
+# Rotas para Limites de Gatos
+def cadastrar_limite():
+    return LimitesController.add_limite(session['CPF'])
+
+@app.route('/limites-gastos', methods=['GET', 'POST'])
+def limites_gastos():
+    erros = {}
+    if request.method == 'POST' and "cadastrar_limite_gasto" in request.form:
+        try:
+            cadastrar_limite()
+        except ExisteLimiteEmAndamento:
+            erros['existe_limite'] = "Você já possui um limite de gasto em vigência!"
+        except DataDeExpiracaoInvalida:
+            erros['data_expiracao'] = "O vencimento do limite deve ser definido para uma data futura!"
+        except ValorInsulficiente:
+            erros['valor'] = "O valor inserido para o limite deve ser maior que 0!"
+    return LimitesController.get_limites(session['CPF'], erros)
+
+@app.route('/limites-gastos/delete/<int:limite_id>', methods=['POST'])
+def delete_limite(limite_id):
+    return LimitesController.deletar_limite(limite_id)
+
+@app.route('/limites-gastos/edit/<int:limite_id>', methods=['GET' ,'POST'])
+def edit_limite(limite_id):
+    if request.method == 'GET':
+        limite = LimitesController.get_limite(limite_id)
+        return render_template("edit_limite.html", limite=limite, erros={})
+    elif request.method == 'POST':
+        erros = {}
+        limite_editado = {
+            'id': limite_id,
+            'data_expiracao': request.form.get('data_expiracao'),
+            'valor': float(request.form.get('valor'),)
+        }
+        try:
+            return LimitesController.editar_limite(limite_id)
+        except DataDeExpiracaoInvalida:
+            erros['data_expiracao'] = "O vencimento do limite deve ser definido para uma data futura!"
+        except ValorInsulficiente:
+            erros['valor'] = "O valor inserido para o limite deve ser maior que 0!"
+        return render_template("edit_limite.html", limite=limite_editado, erros=erros)

@@ -1,0 +1,85 @@
+<!-- app/templates/limites.html -->
+{% extends "layouts/layout2.html" %}
+
+{% block body %}
+
+<div class="page-header">
+    <h3 class="page-title"> Registrar Limite </h3>  
+</div>
+
+<div class="row">
+  <div class="col-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body" {% if erros.existe_limite %} style="border: 2px solid red;" {% endif %}>
+        <form class="forms-sample" method="POST" action="/limites-gastos">
+          <div class="form-group">
+            <label for="data_expiracao">Data de Expiração</label>
+            <div class="form-group">
+                <input type="date" class="form-control" name="data_expiracao" id="data_expiracao" {% if erros.existe_limite %} style="border: 2px solid red;" {% endif %}>
+                {% if erros.data_expiracao %}
+                <span>{{erros.data_expiracao}}</span>
+                {% endif %}
+              </div>
+          </div>
+          <label for="valor">Valor</label>
+          <div class="form-group">
+            
+            <input type="text" class="form-control" name="valor" id="valor" placeholder="Digite o valor" {% if erros.existe_limite %} style="border: 2px solid red;" {% endif %}>
+            {% if erros.valor %}
+            <span>{{erros.valor}}</span>
+            {% endif %}
+          </div>
+          <button type="submit" id="cadastrar_limite_gasto" name="cadastrar_limite_gasto" value="" class="btn btn-primary mr-2">Cadastrar
+            Limite de Gastos</button>
+            <span>{{erros.existe_limite}}</span>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+
+        <h4 class="card-title">Limites</h4>
+        {% if limites|length < 1 %} <h4 class="card-title">Você ainda não registrou nenhum limite!</h4>
+          {% else %}
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <tr>
+                <th>Data de Expiração</th>
+                <th>Valor</th>
+                <th>Remover</th>
+                <th>Alterar</th>
+              </tr>
+              {% for limite in limites %}
+              <tr>
+                <td>{{ limite.data_expiracao }}</td>
+                <td>{{ limite.valor }}</td>
+                <td>
+                  <form action="{{ url_for('delete_limite', limite_id=limite.id) }}" method="post">
+                    <button type="submit" class="btn btn-danger btn-fw">Deletar</button>
+                  </form>
+                </td>
+                <td>
+                  {% if limite.valido == 1 %}
+                  <form action="{{ url_for('edit_limite', limite_id=limite.id) }}" method="get" style="display:inline;">
+                    <button type="submit" class="btn btn-info btn-fw">Editar</button>
+                  </form>
+                  {% endif %}
+                </td>
+
+              </tr>
+              {% endfor %}
+            </table>
+          </div>
+          {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
