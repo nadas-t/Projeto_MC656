@@ -2,10 +2,22 @@ from dataclasses import dataclass
 from app.Model.databaseManager import DBTransactionManager, BaseDB
 
 
+class ErroAoCadastrarCategoria(Exception):
+    pass
+
+
+class NomeCategoriaInvalido(ErroAoCadastrarCategoria):
+    pass
+
+
+class CategoriaNaoRegistrada(Exception):
+    pass
+
+
 @dataclass
 class Categorias:
+    nome: str
     id: int = None
-    nome: str = None
 
     def __post_init__(self):
         pass
@@ -16,12 +28,37 @@ class CategoriasDB:
         self._db = BaseDB()
 
     def adicionar_categoria(self, categoria: Categorias):
-        with DBTransactionManager() as db_manager:
-            db_manager.executar_transacao(
-                comando="INSERT INTO Categorias (nome) VALUES (?)",
-                params=(categoria.nome,),
+        self._db.executar_transacao(
+            comando="INSERT INTO Categorias (nome) VALUES (?)",
+            params=(categoria.nome,),
+        )
+        nova_categoria = self.resgatar_categoria(categoria)
+        return nova_categoria
+
+    def resgatar_categoria(self, categoria: Categorias):
+        categoria_encontrada = self._db.executar_transacao(
+            comando="SELECT id FROM Categorias WHERE nome = ?",
+            params=(categoria.nome,),
+            fetchone=True,
+        )
+        return categoria_encontrada
+
+    def resgatar_categoria_registrada(self, categoria: Categorias):
+        categoria_encontrada = self.resgatar_categoria(categoria)
+        if not categoria_encontrada:
+            raise CategoriaNaoRegistrada(
+                f'A categoria "{categoria.nome}" ainda não está '
+                f"registrada no sistema"
             )
-        return "Categoria adicionada com sucesso!"
+        return categoria_encontrada
+
+    def vincular_categoria(self, categoria: Categorias):
+        try:
+            categoria = self.resgatar_categoria_registrada(categoria)
+        except CategoriaNaoRegistrada:
+            categoria = self.adicionar_categoria(categoria)
+        categoria_id = categoria[0]
+        return categoria_id
 
     def listar_categorias():
         with DBTransactionManager() as db_manager:
