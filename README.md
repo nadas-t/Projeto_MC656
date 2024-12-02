@@ -24,7 +24,33 @@ Daniel Henriques Pamplona ra:260401
 
 ## Arquitetura do Projeto
 
-![Diagrama C4 - nível de componente](![alt text - diagrama C4 a nivel de componentes](image.png))
+Diagrama C4 - nível de componente 
+
+![alt text - diagrama C4 a nivel de componentes](image.png))
+
+O diagrama da aplicação é composto pelos seguintes componentes:
+
+- Cliente: Usuário que poderá ver seus gastos, adicionar salário, alterar configurações da conta como email e usar todas as funções do sistema.
+- Aplicação Web: Páginas de interação com o usuário que apresentam os dados disponibilizados pelo sistema ao usuário, além de permitir a entrada de dados por parte do usuário para o sistema.
+- Controller do Sistema de Alertas: Provê um controlador para gerenciar os alerta e notificações gerados pelo modelo, requisitando a renderização das mensagens na interface do usuário
+- Controller do Sistema de Análises Financeiras:Provê um controlador para gerenciar as análises geradas pelo modelo, requisitando a renderização das análises na interface do usuário
+- Controller de Receitas: Provê um controlador para gerenciar as operações relacionadas às categorias de um sistema.
+- Controller de Categorias: Provê um controlador para gerenciar as operações relacionadas às categorias de um sistema.
+- Controller de Gastos: Provê um controlador para gerenciar as operações relacionadas aos gastos de um sistema .
+- Controller de Usuário: Provê um controlador para gerenciar as operações relacionadas aos usuários de um sistema (listar, adicionar, atualizar usuário e senha, deletar e login).
+-  Sistema de Alertas: Produz alertas/notificações de acordo com o estado das finanças do usuário
+- Sistema de Análises Financeiras:Gera análises financeiras de acordo com os dados financeiros do usuário
+- Model de Receitas   :provê a funcionalidade de deletar receitas, adicionar receitas, obter receita por id, listar receitas e atualizar receitas        
+- Model de Categorias: Provê as funcionalidades de listar categoria, atualizar categoria e deletar categoria.
+- Model de Gastos: provê a funcionalidade de deletar gastos, adicionar gasto, obter gasto po id, listar gastos, atualizar gastos, e converter gastos em hora de trabalho
+- Model de Usuário: provê funcionalidades de adicionar usuário, atualizar usuário, modificar senha, listar usuário, verifica cpf, verifica login, obter dados de usuário e deletar usuario
+- Sistema de Monitoramento: Monitora e centraliza os dados financeiros do usuário, tonando-os disponiveis para outros componentes do sistema
+- Gerenciador do Banco de Dados: Estabelece a conexão com o banco de dados para executar as requisições geradas pelos componentes do model.
+- Banco de Dados:Armazena registros de usuários, e suas operações bancarias associadas
+- Configuração do Banco Model: Inicializa e provê a conexão com o banco de dados
+
+
+
 
 A estrutura geral do nosso projeto segue o estilo arquitetural **MVC** (Model-View-Controller), que organiza os componentes em três camadas independentes:
 
