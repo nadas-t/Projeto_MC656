@@ -7,6 +7,7 @@ from app.Controller.gastosController import GastosController, SalarioController
 from app.Controller.salarioController import *
 from app.Controller.limitesController import ExisteLimiteEmAndamento, LimitesController
 from app.Model.limitesModel import DataDeExpiracaoInvalida, ValorInsulficiente
+from app.Model.notificacoes.limiteGastos import AlertasLimiteGastos
 
 @app.route('/')
 @app.route('/index')
@@ -14,7 +15,10 @@ from app.Model.limitesModel import DataDeExpiracaoInvalida, ValorInsulficiente
 def index():
     
     if 'username' in session:
-        return render_template('index.html')
+        alertas = {}
+        alerta_limite = AlertasLimiteGastos.capturar_alerta(session['CPF'])
+        alertas['alerta_limite'] = alerta_limite
+        return render_template('index.html', alertas=alertas)
     else:
         return redirect(url_for('login')) 
 

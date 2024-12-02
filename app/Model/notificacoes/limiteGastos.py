@@ -1,24 +1,21 @@
-from abc import ABC, abstractmethod
+from app.Model.monitoramento.limiteGastos import MonitoramentoLimiteGastos, GeradorAlertaGastos, NenhumLimiteCadastrado
 
-
-class CriadorAlertaGastos(ABC):
+class AlertasLimiteGastos:
+    @staticmethod
+    def capturar_alerta(CPF):
+        try:
+            monitor_limite = MonitoramentoLimiteGastos(CPF)
+            alerta = monitor_limite.monitorar_limite()
+            return formatar_alerta(alerta)
+        except NenhumLimiteCadastrado:
+            return None
     
-    @abstractmethod
-    def factory_method(self):
-        pass
-    
-class AlertaGastos(ABC):
-    ...
-
-class CriadorAlertaGastosGrave(CriadorAlertaGastos):
-    def factory_method(self):
-        return AlertaGastosGrave()
-    
-class AlertaGastosGrave(AlertaGastos):
-    ...
-    
-class AlertaGastosMedio(AlertaGastos):
-    ...
-
-class AlertaGastosBaixo(AlertaGastos):
-    ...
+def formatar_alerta(alerta: GeradorAlertaGastos):
+    if alerta is not None:
+        return {
+            "severidade": alerta.exibir_severidade,
+            "mensagem": alerta.exibir_mensagem(),
+            "valor_limite": alerta.limite.valor,
+            "total_gasto": alerta.total_gasto
+        }
+    return None

@@ -80,7 +80,6 @@ class LimiteGastosDB:
             )
             
     def atualizar_limite(self, limite_gastos: LimiteGastos):
-        breakpoint()
         with DBTransactionManager() as db_manager:
             db_manager.executar_transacao(
                 comando="UPDATE Limites SET (valor, data_expiracao) = (?, ?) WHERE id = ?",
