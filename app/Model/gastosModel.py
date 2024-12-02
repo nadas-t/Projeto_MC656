@@ -64,7 +64,7 @@ class GastosDB:
             comando="SELECT Gastos.id AS gasto_id, data, valor, Categorias.nome AS categoria_nome "
                 "FROM Gastos " 
                 "JOIN Categorias ON Gastos.categoria_id = Categorias.id " 
-                "WHERE gasto_id = ? AND Gastos.usuario_id = ? ",
+                "WHERE gasto_id = ? AND Gastos.usuario_id = ? ORDER BY data_insercao DESC",
             params=(gasto_id, CPF)
         )
         return gasto
@@ -74,7 +74,7 @@ class GastosDB:
             comando="SELECT Gastos.id AS gasto_id, data, valor, Categorias.nome AS categoria_nome "
                 "FROM Gastos " 
                 "JOIN Categorias ON Gastos.categoria_id = Categorias.id " 
-                "WHERE Gastos.usuario_id = ?",
+                "WHERE Gastos.usuario_id = ? ORDER BY data_insercao DESC",
             params=(CPF,)
         )
         return gastos

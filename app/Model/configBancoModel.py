@@ -25,7 +25,8 @@ class InstanciadorDB:
                 data TEXT NOT NULL,             
                 valor REAL NOT NULL,           
                 categoria_id INTEGER,          
-                usuario_id INTEGER,            
+                usuario_id INTEGER,
+                data_insercao TEXT DEFAULT CURRENT_TIMESTAMP,            
                 FOREIGN KEY (categoria_id) REFERENCES Categorias (id),  
                 FOREIGN KEY (usuario_id) REFERENCES Usuario (CPF)       
             )
@@ -40,7 +41,8 @@ class InstanciadorDB:
                 data TEXT NOT NULL,             
                 valor REAL NOT NULL,           
                 categoria_id INTEGER,          
-                usuario_id INTEGER,            
+                usuario_id INTEGER,
+                data_insercao TEXT DEFAULT CURRENT_TIMESTAMP,            
                 FOREIGN KEY (categoria_id) REFERENCES Categorias (id),  
                 FOREIGN KEY (usuario_id) REFERENCES Usuario (CPF)       
             )

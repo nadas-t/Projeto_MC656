@@ -5,6 +5,7 @@ from app.Controller import usuarioController
 from app.Controller.usuarioController import *
 from app.Controller.gastosController import GastosController
 from app.Controller.receitasController import ReceitasController
+from app.module.dados_dashbord import Dashboard
 
 
 @app.route("/")
@@ -12,7 +13,12 @@ from app.Controller.receitasController import ReceitasController
 def index():
 
     if "username" in session:
-        return render_template("index.html")
+        
+        dashboard = Dashboard()
+        saldo = dashboard.saldo(session['CPF'])
+        movimentacoes = dashboard.movimentacoes(session['CPF'])
+        
+        return render_template("index.html", saldo = saldo, movimentacoes = movimentacoes)
     else:
         return redirect(url_for("login"))
 

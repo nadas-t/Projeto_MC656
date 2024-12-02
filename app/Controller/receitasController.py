@@ -3,7 +3,6 @@ from flask import render_template, request, redirect
 
 from app.Model.categoriasModel import (
     CategoriasDB,
-    # Categorias,
 )
 
 from app.Model.receitasModel import (

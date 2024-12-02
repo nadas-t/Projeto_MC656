@@ -65,7 +65,7 @@ class ReceitasDB:
             comando="SELECT Receitas.id AS receita_id, data, valor, Categorias.nome AS categoria_nome "
                 "FROM Receitas " 
                 "JOIN Categorias ON Receitas.categoria_id = Categorias.id " 
-                "WHERE receita_id = ? AND Receitas.usuario_id = ? ",
+                "WHERE receita_id = ? AND Receitas.usuario_id = ? ORDER BY data_insercao DESC",
             params=(receita_id, CPF)
         )
         return receita
@@ -75,7 +75,7 @@ class ReceitasDB:
             comando="SELECT Receitas.id AS gasto_id, data, valor, Categorias.nome AS categoria_nome "
                 "FROM Receitas " 
                 "JOIN Categorias ON Receitas.categoria_id = Categorias.id "  
-                "WHERE Receitas.usuario_id = ?",
+                "WHERE Receitas.usuario_id = ? ORDER BY data_insercao DESC",
             params=(CPF,)
         )
         return receitas
