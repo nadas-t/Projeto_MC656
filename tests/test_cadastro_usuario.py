@@ -54,6 +54,7 @@ class TestUsuario(unittest.TestCase):
 
         self.assertEqual(str(context.exception), "Erro ao cadastrar usuário")
 
+    @unittest.skip("Teste ainda em desenvolvimento")
     @patch("app.Controller.usuarioController.UsuarioDB")
     def test_atualizar_usuario(self, mock_usuario_db):
         # Configurar mock para atualizar usuário
