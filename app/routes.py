@@ -3,6 +3,10 @@ from flask import render_template, request, flash, redirect, url_for, session
 from app.Controller import categoriasController
 from app.Controller import usuarioController
 from app.Controller.usuarioController import *
+from app.Controller.salarioController import *
+from app.Controller.limitesController import ExisteLimiteEmAndamento, LimitesController
+from app.Model.limitesModel import DataDeExpiracaoInvalida, ValorInsulficiente
+from app.Model.notificacoes.limiteGastos import AlertasLimiteGastos
 from app.Controller.gastosController import GastosController
 from app.Controller.receitasController import ReceitasController
 from app.module.dados_dashbord import Dashboard
@@ -10,7 +14,11 @@ from app.module.dados_dashbord import Dashboard
 @app.route("/")
 @app.route("/index")
 def index():
-    if "username" in session:
+
+    if 'username' in session:
+        alertas = {}
+        alerta_limite = AlertasLimiteGastos.capturar_alerta(session['CPF'])
+        alertas['alerta_limite'] = alerta_limite
         dashboard = Dashboard()
         saldo = dashboard.saldo(session['CPF'])
         movimentacoes = dashboard.movimentacoes(session['CPF'])
@@ -22,6 +30,7 @@ def index():
         valores = list(gastos.values())
         n_categorias = len(categorias)
         return render_template("index.html", saldo = saldo, movimentacoes = movimentacoes, gastos=total_gasto, categorias=categorias, valores=valores, n_categorias=n_categorias)
+
     else:
         return redirect(url_for("login"))
 
@@ -61,10 +70,13 @@ def registrar():
 
 @app.route("/autenticar", methods=["POST"])
 def autenticar():
-    email  = request.form.get('email')
-    senha  = request.form.get('senha')
-    result_list = usuarioController.UsuariosController.login(email, senha)  # Presume-se que verificarUsuario retorna uma lista
-    
+    email = request.form.get("email")
+    senha = request.form.get("senha")
+
+    result_list = usuarioController.UsuariosController.login(
+        email, senha
+    )  # Presume-se que verificarUsuario retorna uma lista
+
     if result_list:
         session['CPF'] = result_list[0]
         session['username'] = result_list[1]
@@ -120,7 +132,6 @@ def trocar_senha():
             )
             if resultado == "Senha atualizada com sucesso!":
                 session["senha"] = senha1
-
             flash(resultado)
             return redirect("/trocar_senha")
 
@@ -141,8 +152,8 @@ def add_salario():
 
             resultado = usuarioController.UsuariosController.adicionarSalario(session['CPF'], salario, horas_trabalho)
             flash(resultado)
-            return redirect('/salario')
-        
+
+            return redirect('/salario')        
         if 'username' in session:
             row = usuarioController.UsuariosController.login(session['email'], session['senha'])            
             return render_template('usuario/salario.html', row=row)
@@ -152,6 +163,7 @@ def add_salario():
             return render_template("usuario/trocar_senha.html")
 
     return redirect(url_for("login"))
+
 
 
 # Rotas para Gastos
@@ -230,3 +242,77 @@ def edit_categoria(categoria_id):
 @app.route("/categorias/delete/<int:categoria_id>", methods=["POST"])
 def delete_categoria(categoria_id):
     return categoriasController.delete_categoria(categoria_id)
+
+# Rotas para Limites de Gatos
+def cadastrar_limite():
+    return LimitesController.add_limite(session['CPF'])
+
+@app.route('/limites-gastos', methods=['GET', 'POST'])
+def limites_gastos():
+    erros = {}
+    if request.method == 'POST' and "cadastrar_limite_gasto" in request.form:
+        try:
+            cadastrar_limite()
+        except ExisteLimiteEmAndamento:
+            erros['existe_limite'] = "Você já possui um limite de gasto em vigência!"
+        except DataDeExpiracaoInvalida:
+            erros['data_expiracao'] = "O vencimento do limite deve ser definido para uma data futura!"
+        except ValorInsulficiente:
+            erros['valor'] = "O valor inserido para o limite deve ser maior que 0!"
+    return LimitesController.get_limites(session['CPF'], erros)
+
+@app.route('/limites-gastos/delete/<int:limite_id>', methods=['POST'])
+def delete_limite(limite_id):
+    return LimitesController.deletar_limite(limite_id)
+
+@app.route('/limites-gastos/edit/<int:limite_id>', methods=['GET' ,'POST'])
+def edit_limite(limite_id):
+    if request.method == 'GET':
+        limite = LimitesController.get_limite(limite_id)
+        return render_template("edit_limite.html", limite=limite, erros={})
+    elif request.method == 'POST':
+        erros = {}
+        limite_editado = {
+            'id': limite_id,
+            'data_expiracao': request.form.get('data_expiracao'),
+            'valor': float(request.form.get('valor'),)
+        }
+        try:
+            return LimitesController.editar_limite(limite_id)
+        except DataDeExpiracaoInvalida:
+            erros['data_expiracao'] = "O vencimento do limite deve ser definido para uma data futura!"
+        except ValorInsulficiente:
+            erros['valor'] = "O valor inserido para o limite deve ser maior que 0!"
+        return render_template("edit_limite.html", limite=limite_editado, erros=erros)
+
+# Rota para aprender mais
+@app.route("/aprender-mais", methods=["GET"])
+def aprenderMais():
+    
+    return render_template("aprenderMais.html")
+
+@app.route("/conteudo1", methods=["GET"])
+def conteudo1():
+    
+    return render_template("conteudo1.html")
+
+@app.route("/conteudo2", methods=["GET"])
+def conteudo2():
+    
+    return render_template("conteudo2.html")
+
+@app.route("/conteudo3", methods=["GET"])
+def conteudo3():
+    
+    return render_template("conteudo3.html")
+
+@app.route("/conteudo4", methods=["GET"])
+def conteudo4():
+    
+    return render_template("conteudo4.html")    
+
+@app.route("/conteudo5", methods=["GET"])
+def conteudo5():
+    
+    return render_template("conteudo5.html")    
+

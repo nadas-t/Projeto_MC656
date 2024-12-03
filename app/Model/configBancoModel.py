@@ -65,9 +65,23 @@ class InstanciadorDB:
                 )"""
         )
 
+    def gerar_tabela_de_limites(self):
+        self._db.executar_transacao(
+            comando="""
+                CREATE TABLE IF NOT EXISTS Limites (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    valor REAL NOT NULL,
+                    data_expiracao TEXT NOT NULL,
+                    data_inicio TEXT NOT NULL,
+                    usuario_id INTEGER,
+                    FOREIGN KEY (usuario_id) REFERENCES Usuario (CPF)
+                )"""
+        )
+
     def CriarBancoDados(self):
         with DBTransactionManager():
             self.gerar_tabela_de_categorias()
             self.gerar_tabela_de_gastos()
             self.gerar_tabela_de_receitas()
             self.gerar_tabela_de_usuarios()
+            self.gerar_tabela_de_limites()

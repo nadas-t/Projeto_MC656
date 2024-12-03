@@ -1,0 +1,42 @@
+{% extends "layouts/layout2.html" %}
+
+{% block body %}
+
+<div class="page-header">
+    <h3 class="page-title"> Editar Limite </h3>  
+</div>
+
+<div class="row">
+  <div class="col-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <form class="forms-sample" method="POST" action="{{ url_for('edit_limite', limite_id=limite.id) }}">
+          <div class="form-group">
+            <label for="data_expiracao">Data de Expiração</label>
+            <div class="form-group">
+                {% if erros.data_expiracao %}
+                <input type="date" class="form-control" name="data_expiracao" id="data_expiracao" style="border: 2px solid red;">
+                <span>{{erros.data_expiracao}}</span>
+                {% else %}
+                <input type="date" class="form-control" value="{{limite.data_expiracao}}" name="data_expiracao" id="data_expiracao">
+                {% endif %}
+              </div>
+          </div>
+          <label for="valor">Valor</label>
+          <div class="form-group">
+            {% if erros.valor %}
+            <input type="text" class="form-control" name="valor" id="valor" placeholder="Digite o valor" style="border: 2px solid red;">
+            <span>{{erros.valor}}</span>
+            {% else %}
+            <input type="text" class="form-control" value="{{limite.valor}}" name="valor" id="valor" placeholder="Digite o valor">
+            {% endif %}
+          </div>
+          <button type="submit" id="cadastrar_limite_gasto" name="cadastrar_limite_gasto" value="" class="btn btn-primary mr-2">Atualizar
+            Limite de Gastos</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
