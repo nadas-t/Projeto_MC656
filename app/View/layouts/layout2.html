@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<<<<<<< HEAD
 
 <head>
   <!-- Required meta tags -->
@@ -114,9 +113,18 @@
             <ul class="nav flex-column sub-menu">
               <li class="nav-item"> <a class="nav-link" href="/receitas">Adicionar receitas</a></li>
               <li class="nav-item"> <a class="nav-link" href="/gastos">Adicionar gastos</a></li>
+              <li class="nav-item"> <a class="nav-link" href="/limites-gastos">Adicionar limite de gastos</a></li>
               <li class="nav-item"> <a class="nav-link" href="/salario">Inserir salário</a></li>
             </ul>
           </div>
+        </li>
+        <li class="nav-item menu-items"> 
+          <a class="nav-link" href="\aprender-mais">
+            <span class="menu-icon">
+              <img src="../../static/assets/icons/book.png" alt="icone de um livro em vermelho">
+            </span>
+            <span class="menu-title">Aprender Mais</span>
+          </a>
         </li>
       </ul>
     </nav>
@@ -127,39 +135,6 @@
         <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
           <a class="navbar-brand brand-logo-mini" href="{{ url_for('index') }}"><img
               src="{{ url_for('static', filename='assets/images/logo-mini.svg') }}" alt="logo" /></a>
-=======
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Finance Control>
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/mdi/css/materialdesignicons.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/css/vendor.bundle.base.css') }}">
-
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/jvectormap/jquery-jvectormap.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/flag-icon-css/css/flag-icon.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/owl-carousel-2/owl.carousel.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/owl-carousel-2/owl.theme.default.min.css') }}">
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
-    <!-- endinject -->
-    <!-- Layout styles -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/style.css') }}">
-    <!-- End layout styles -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/images/favicon.png') }}">
-    {% block styles %}
-    {% endblock %}
-  </head>
-  <body>
-    <div class="container-scroller">
-      <!-- partial:partials/_sidebar.html -->
-      <nav class="sidebar sidebar-offcanvas" id="sidebar">
-        <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-          <a class="sidebar-brand brand-logo" href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='assets/images/logo.svg') }}" alt="logo" /></a>
-          <a class="sidebar-brand brand-logo-mini" href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='assets/images/logo-mini.svg') }}" alt="logo" /></a>
->>>>>>> develop
         </div>
         <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
           <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
@@ -246,7 +221,6 @@
                 <div class="dropdown-divider"></div>
                 <p class="p-3 mb-0 text-center">Configurações avançadas</p>
               </div>
-<<<<<<< HEAD
             </li>
           </ul>
           <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
@@ -254,48 +228,6 @@
             <span class="mdi mdi-format-line-spacing"></span>
           </button>
         </div>
-=======
-            </div>
-          </li>
-          <li class="nav-item nav-category">
-            <span class="nav-link">Navegação</span>
-          </li>
-          <li class="nav-item menu-items">
-            <a class="nav-link" href="\index">
-              <span class="menu-icon">
-                <i class="mdi mdi-speedometer"></i>
-              </span>
-              <span class="menu-title">Dashboard</span>
-            </a>
-          </li>
-          <li class="nav-item menu-items">
-            <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
-              <span class="menu-icon">
-                <i class="mdi mdi-laptop"></i>
-              </span>
-              <span class="menu-title">Gerenciar finanças</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="ui-basic">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="/gastos">Adicionar/Visualizar meus gastos</a></li>
-                <li class="nav-item"> <a class="nav-link" href="/limites-gastos">Cadastrar Limite de Gastos</a></li>
-                <li class="nav-item"> <a class="nav-link" href="/receitas">Adicionar receitas</a></li>
-                <li class="nav-item"> <a class="nav-link" href="/salario">Inserir salário</a></li>
-              </ul>
-            </div>
-          </li>
-          <!-- comentário -->
-          <li class="nav-item menu-items"> 
-            <a class="nav-link" href="\aprender-mais">
-              <span class="menu-icon">
-                <img src="../../static/assets/icons/book.png" alt="icone de um livro em vermelho">
-              </span>
-              <span class="menu-title">Aprender Mais</span>
-            </a>
-          </li>
-        </ul>
->>>>>>> develop
       </nav>
       <!-- partial -->
       <div class="main-panel">

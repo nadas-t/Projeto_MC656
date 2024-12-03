@@ -103,8 +103,9 @@ class MonitoramentoLimiteGastos:
     def percentual_do_limite_excedido(self, total_gasto: float):
         return  total_gasto/self.limite.valor
     
-    def monitorar_limite(self):
+    def monitorar_limite(self, CPF):
         total_gasto = self.get_total_gasto_no_intervalo(
+            CPF,
             data_min= self.limite.data_inicio,
             data_max=self.limite.data_expiracao,
         )
@@ -121,9 +122,9 @@ class MonitoramentoLimiteGastos:
             return GeradorAlertaGastosBaixo(limite=self.limite, total_gasto=total_gasto)
         return GeradorInformativoLimiteGastos(limite=self.limite, total_gasto=total_gasto)
     
-    def get_total_gasto_no_intervalo(self, data_min, data_max):
+    def get_total_gasto_no_intervalo(self, CPF, data_min, data_max):
         gasto_db = GastosDB()
-        gastos = gasto_db.listar_gastos(Gastos(id=None))
+        gastos = gasto_db.listar_gastos(Gastos(id=None), CPF=CPF)
         total = 0   
         for gasto in gastos:
             if data_min <= converte_para_date(gasto['data']) <= data_max:

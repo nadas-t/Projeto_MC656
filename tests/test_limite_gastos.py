@@ -56,5 +56,5 @@ class TestMonitorGastos(unittest.TestCase):
         data_max = datetime.strptime("2024-02-19", "%Y-%m-%d").date()
         
         # Chamando o método e verificando o resultado
-        total = monitor_gastos.get_total_gasto_no_intervalo(data_min, data_max)
+        total = monitor_gastos.get_total_gasto_no_intervalo( "", data_min, data_max)
         self.assertEqual(total, 750.00)  # Soma dos valores no intervalo fornecido
