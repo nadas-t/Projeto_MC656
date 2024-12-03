@@ -5,7 +5,7 @@ class AlertasLimiteGastos:
     def capturar_alerta(CPF):
         try:
             monitor_limite = MonitoramentoLimiteGastos(CPF)
-            alerta = monitor_limite.monitorar_limite()
+            alerta = monitor_limite.monitorar_limite(CPF)
             return formatar_alerta(alerta)
         except NenhumLimiteCadastrado:
             return None
