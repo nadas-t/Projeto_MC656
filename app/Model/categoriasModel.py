@@ -75,7 +75,7 @@ class CategoriasDB:
                         "id": row[0],
                         "data": row[1],
                         "valor": row[2],
-                        "categoria_nome": row[3],
+                        "categoria_nome": row[3] ,
                     }
                     for row in resultado
                 ]
@@ -89,6 +89,7 @@ class CategoriasDB:
                 params=(categoria.nome, categoria.id),
             )
         return "Categoria atualizada com sucesso!"
+        
 
     def deletar_categoria(self, categoria: Categorias):
         with DBTransactionManager() as db_manager:
@@ -97,3 +98,12 @@ class CategoriasDB:
                 params=(categoria.id,),
             )
         return "Categoria deletada com sucesso!"
+
+def resgatar_nome_categoria(categoria_id):
+    with DBTransactionManager() as db_manager:
+        categoria_nome = db_manager.executar_transacao(
+            comando="SELECT nome FROM Categorias WHERE id = ?",
+            params=(categoria_id,),
+            fetchone=True,
+        )
+    return categoria_nome

@@ -11,6 +11,14 @@ from app.Model.receitasModel import (
     Receitas,
 )
 
+<<<<<<< HEAD
+=======
+from app.Model.categoriasModel import (
+    CategoriasDB,
+    resgatar_nome_categoria,
+)
+
+>>>>>>> b83dd7e8 (implementa preenchimeto do grafico de gastos por categoria com dados do banco)
 class Dashboard:
 
     def __init__(self):
@@ -65,17 +73,22 @@ class Dashboard:
         }
         
     def gastos_mes(self, CPF):
-
-        valor = 0
         data_atual = datetime.now()
         mes_atual = data_atual.strftime('%m')  # '%m' retorna o mês com 2 dígitos
-
-        gasto = Gastos(id=None)
         gasto_db = GastosDB()
         gastos = gasto_db.listar_gasto_mes(mes_atual, CPF)
-
-        if gastos and len(gastos) > 0:
-            for gasto in gastos:
-                valor = valor + gasto['valor']
         
-        return valor
+        return gastos
+    
+    def calcular_gastos_por_categoria(self, CPF):
+        valor_gasto_por_categoria = {}
+        for gasto in self.gastos_mes(CPF):
+            categoria = resgatar_nome_categoria(gasto['categoria_nome'])
+            valor = gasto['valor']
+
+            if categoria in valor_gasto_por_categoria:
+                valor_gasto_por_categoria[categoria] += valor
+            else:
+                valor_gasto_por_categoria[categoria] = valor
+        return valor_gasto_por_categoria
+        

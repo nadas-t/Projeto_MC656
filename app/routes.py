@@ -10,16 +10,16 @@ from app.module.dados_dashbord import Dashboard
 @app.route("/")
 @app.route("/index")
 def index():
-
     if "username" in session:
-        
         dashboard = Dashboard()
         saldo = dashboard.saldo(session['CPF'])
         movimentacoes = dashboard.movimentacoes(session['CPF'])
-        gastos = dashboard.gastos_mes(session['CPF'])
-        return render_template("index.html", saldo = saldo, gastos = gastos, movimentacoes = movimentacoes, categorias=["A", "B", "C", "D"], valores=[1, 2, 3, 4], n_categorias=4)
 
-
+        gastos = dashboard.calcular_gastos_por_categoria(session['CPF'])
+        categorias = list(gastos.keys())
+        valores = list(gastos.values())
+        n_categorias = len(categorias)
+        return render_template("index.html", saldo = saldo, movimentacoes = movimentacoes, categorias=categorias, valores=valores, n_categorias=n_categorias)
     else:
         return redirect(url_for("login"))
 
