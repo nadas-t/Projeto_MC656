@@ -190,7 +190,6 @@ def salario():
 
     return SalarioController.get_salario()
 
-<<<<<<< HEAD
 
 # Rotas para Limites de Gatos
 def cadastrar_limite():
@@ -233,7 +232,6 @@ def edit_limite(limite_id):
         except ValorInsulficiente:
             erros['valor'] = "O valor inserido para o limite deve ser maior que 0!"
         return render_template("edit_limite.html", limite=limite_editado, erros=erros)
-=======
 # Rota para aprender mais
 @app.route("/aprender-mais", methods=["GET"])
 def aprenderMais():
@@ -264,4 +262,3 @@ def conteudo4():
 def conteudo5():
     
     return render_template("conteudo5.html")    
->>>>>>> feature/Informação-de-gestão-financeira
