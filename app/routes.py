@@ -17,8 +17,8 @@ def index():
         saldo = dashboard.saldo(session['CPF'])
         movimentacoes = dashboard.movimentacoes(session['CPF'])
         gastos = dashboard.gastos_mes(session['CPF'])
-        
-        return render_template("index.html", saldo = saldo, gastos = gastos, movimentacoes = movimentacoes)
+        return render_template("index.html", saldo = saldo, gastos = gastos, movimentacoes = movimentacoes, categorias=["A", "B", "C", "D"], valores=[1, 2, 3, 4], n_categorias=4)
+
 
     else:
         return redirect(url_for("login"))
