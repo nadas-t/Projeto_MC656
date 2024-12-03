@@ -25,17 +25,3 @@ class SalarioController:
     @staticmethod
     def get_salario_hora():
         return SalarioController.salario/SalarioController.horas
-
-
-
-
-
-
-
-
-
-
-
-
-
-

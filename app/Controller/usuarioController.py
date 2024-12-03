@@ -65,4 +65,3 @@ class UsuariosController:
         usuario_db = UsuarioDB()
         resultado = usuario_db.adicionarSalario(usuario)
         return resultado
-    

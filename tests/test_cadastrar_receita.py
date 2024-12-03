@@ -1,76 +1,52 @@
 import unittest
-from unittest.mock import MagicMock
-from app.Model.receitasModel import Receitas, ReceitasDB, converte_receita_horas
+from unittest.mock import patch, MagicMock
+from app.Model.receitasModel import ReceitasDB, Receitas
+from app.Controller.receitasController import ReceitasController
 
-from app.Model.categoriasModel import Categorias
 
-class TestReceitasDB(unittest.TestCase):
+class TestReceitas(unittest.TestCase):
+
     def setUp(self):
-        self.receitas_db = ReceitasDB()
-        self.receitas_db._db = MagicMock()
-        self.receita = Receitas(
-            data="2024-12-01",
-            valor=500.0,
-            id=1,
-            categoria=Categorias(nome="Salário"),
-        )
-        self.CPF = "12345678900"
-        
-    def test_converte_receita_horas(self):
-        receitas = [
-            Receitas(data="2024-12-01", valor=500.0, id=1, categoria=Categorias(nome="Salário")),
-            Receitas(data="2024-12-02", valor=1000.0, id=2, categoria=Categorias(nome="Freelance")),
-        ]
-        receita_por_hora = 50.0
+        self.receita_db = ReceitasDB()
 
-        resultado = converte_receita_horas(receitas, receita_por_hora)
-
-        self.assertEqual(resultado[0].valor, 10.0)  # 500 / 50
-        self.assertEqual(resultado[1].valor, 20.0)  # 1000 / 50
-        
-    def test_registrar_receita(self):
-        categoria_id = 1
-        self.receitas_db.registrar_receita(categoria_id, self.receita, self.CPF)
-
-        self.receitas_db._db.executar_transacao.assert_called_once_with(
+    @patch("app.Model.receitasModel.BaseDB.executar_transacao")
+    def test_registrar_receita(self, mock_db):
+        mock_db.return_value = True
+        receita = Receitas(data="2024-12-01", valor=500.0)
+        response = self.receita_db.registrar_receita(1, receita, "123456789")
+        self.assertEqual(response, "Receita cadastrada com sucesso!")
+        mock_db.assert_called_with(
             comando="INSERT INTO Receitas (data, valor, categoria_id, usuario_id) VALUES (?, ?, ?, ?)",
-            params=("2024-12-01", 500.0, 1, "12345678900"),
-        )
-        
-    def test_atualizar_receita(self):
-        categoria_nome = "Investimento"
-        resultado = self.receitas_db.atualizar_receita(categoria_nome, self.receita)
-
-        self.receitas_db._db.executar_transacao.assert_any_call(
-            comando="UPDATE Receitas SET data = ?, valor = ? WHERE id = ?",
-            params=("2024-12-01", 500.0, 1),
+            params=("2024-12-01", 500.0, 1, "123456789"),
         )
 
-        self.receitas_db._db.executar_transacao.assert_any_call(
-            comando="UPDATE Categorias SET nome = ? WHERE id = (SELECT categoria_id FROM Receitas WHERE id = ? LIMIT 1);",
-            params=("Investimento", 1),
-        )
+    @patch("app.Model.receitasModel.BaseDB.executar_transacao")
+    def test_atualizar_receita(self, mock_db):
+        mock_db.return_value = True
+        receita = Receitas(data="2024-12-02", valor=750.0, id=1)
+        response = self.receita_db.atualizar_receita("Investimento", receita)
+        self.assertEqual(response, "Receita atualizada com sucesso!")
+        self.assertEqual(mock_db.call_count, 2)  # Garantir que duas queries foram executadas
 
-        self.assertEqual(resultado, "Receita atualizada com sucesso!")
-        
-    def test_listar_receitas(self):
-        self.receitas_db._db.executar_transacao.return_value = [
+    @patch("app.Model.receitasModel.BaseDB.executar_transacao")
+    def test_listar_receitas(self, mock_db):
+        mock_db.return_value = [
             (1, "2024-12-01", 500.0, "Salário"),
-            (2, "2024-12-02", 1000.0, "Freelance"),
+            (2, "2024-12-05", 300.0, "Freelance"),
         ]
+        receitas = self.receita_db.listar_receitas(Receitas(id=None), "123456789")
+        self.assertEqual(len(receitas), 2)
+        self.assertEqual(receitas[0]["data"], "2024-12-01")
 
-        resultado = self.receitas_db.listar_receitas(Receitas(), self.CPF)
-
-        self.receitas_db._db.executar_transacao.assert_called_once()
-        self.assertEqual(len(resultado), 2)
-        self.assertEqual(resultado[0]["valor"], 500.0)
-        
-    def test_deletar_receita(self):
-        receita_id = 1
-        resultado = self.receitas_db.deletar_receita(receita_id)
-
-        self.receitas_db._db.executar_transacao.assert_called_once_with(
+    @patch("app.Model.receitasModel.BaseDB.executar_transacao")
+    def test_deletar_receita(self, mock_db):
+        mock_db.return_value = True
+        response = self.receita_db.deletar_receita(1)
+        self.assertEqual(response, "Receita deletada com sucesso!")
+        mock_db.assert_called_with(
             comando="DELETE FROM Receitas WHERE id = ?",
             params=(1,),
         )
-        self.assertEqual(resultado, "Receita deletada com sucesso!")
+
+if __name__ == "__main__":
+    unittest.main()

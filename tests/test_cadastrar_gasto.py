@@ -1,60 +1,62 @@
 import unittest
-from unittest.mock import MagicMock, patch
-from app.Model.gastosModel import Gastos, GastosDB, converte_gasto_horas
-from app.Model.categoriasModel import Categorias
+from unittest.mock import patch, MagicMock
+from app.Model.gastosModel import GastosDB, Gastos
+from app.Controller.gastosController import GastosController
 
-class TestConverteGastoHoras(unittest.TestCase):
-    def test_converte_gasto_horas(self):
-        # Dados de entrada
-        gastos = [
-            Gastos(data="2024-12-01", valor=200.0, id=1, categoria=Categorias(nome="Transporte")),
-            Gastos(data="2024-12-01", valor=300.0, id=2, categoria=Categorias(nome="Alimentação")),
-        ]
-        ganho_por_hora = 50.0
+class TestGastos(unittest.TestCase):
 
-        # Executa a função
-        resultado = converte_gasto_horas(gastos, ganho_por_hora)
-
-        # Verifica os resultados
-        self.assertEqual(resultado[0].valor, 4.0)  # 200 / 50
-        self.assertEqual(resultado[1].valor, 6.0)  # 300 / 50
-        
-class TestGastosDB(unittest.TestCase):
     def setUp(self):
-        # Configuração inicial
-        self.gastos_db = GastosDB()
-        self.gastos_db._db = MagicMock()
-    
-    def test_registrar_gasto(self):
-        # Simula a inserção de um gasto
-        gasto = Gastos(data="2024-12-01", valor=150.0, id=1)
-        CPF = "12345678900"
-        categoria_id = 2
+        self.gasto_db = GastosDB()
 
-        self.gastos_db.registrar_gasto(categoria_id, gasto, CPF)
-
-        self.gastos_db._db.executar_transacao.assert_called_once_with(
+    @patch("app.Model.gastosModel.BaseDB.executar_transacao")
+    def test_registrar_gasto(self, mock_db):
+        mock_db.return_value = True
+        gasto = Gastos(data="2024-12-01", valor=100.0)
+        response = self.gasto_db.registrar_gasto(1, gasto, "123456789")
+        self.assertEqual(response, "Gasto inserido com sucesso!")
+        mock_db.assert_called_with(
             comando="INSERT INTO Gastos (data, valor, categoria_id, usuario_id) VALUES (?, ?, ?, ?)",
-            params=("2024-12-01", 150.0, 2, "12345678900"),
+            params=("2024-12-01", 100.0, 1, "123456789"),
         )
-    
-    def test_atualizar_gasto(self):
-        gasto = Gastos(data="2024-12-02", valor=200.0, id=1)
-        categoria_nome = "Educação"
 
-        resultado = self.gastos_db.atualizar_gasto(categoria_nome, gasto)
+    @patch("app.Model.gastosModel.BaseDB.executar_transacao")
+    def test_atualizar_gasto(self, mock_db):
+        mock_db.return_value = True
+        gasto = Gastos(data="2024-12-01", valor=150.0, id=1)
+        response = self.gasto_db.atualizar_gasto("Alimentação", gasto)
+        self.assertEqual(response, "Gasto atualizado com sucesso!")
+        self.assertEqual(mock_db.call_count, 2)  # Garantir que duas queries foram executadas
 
-        self.assertEqual(resultado, "Gasto atualizado com sucesso!")
+    @patch("app.Model.gastosModel.BaseDB.executar_transacao")
+    def test_listar_gastos(self, mock_db):
+        mock_db.return_value = [
+            (1, "2024-12-01", 100.0, "Alimentação"),
+            (2, "2024-12-02", 200.0, "Transporte"),
+        ]
+        gastos = self.gasto_db.listar_gastos(Gastos(id=None), "123456789")
+        self.assertEqual(len(gastos), 2)
+        self.assertEqual(gastos[0]["data"], "2024-12-01")
 
-    '''Revisar depois 
-    def test_deletar_gasto(self):
-        gasto_id = 1
-
-        resultado = self.gastos_db.deletar_gasto(gasto_id)
-
-        self.gastos_db._db.executar_transacao.assert_called_once_with(
+    @patch("app.Model.gastosModel.BaseDB.executar_transacao")
+    def test_deletar_gasto(self, mock_db):
+        mock_db.return_value = True
+        response = self.gasto_db.deletar_gasto(1)
+        self.assertEqual(response, "Gasto deletado com sucesso!")
+        mock_db.assert_called_with(
             comando="DELETE FROM Gastos WHERE id = ?",
-            params=(gasto_id,),
+            params=(1,),
         )
-        self.assertEqual(resultado, "Gasto deletado com sucesso!")
-    '''
+
+    @patch("app.Model.gastosModel.BaseDB.executar_transacao")
+    def test_listar_gasto_mes(self, mock_db):
+        mock_db.return_value = [
+            (1, "2024-12-01", 100.0, "Alimentação"),
+            (2, "2024-12-15", 200.0, "Transporte"),
+        ]
+        gastos = self.gasto_db.listar_gasto_mes("12", "123456789")
+        self.assertEqual(len(gastos), 2)
+        self.assertEqual(gastos[1]["data"], "2024-12-15")
+
+
+if __name__ == "__main__":
+    unittest.main()

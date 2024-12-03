@@ -206,7 +206,6 @@ def convert_receita():
         ReceitasController.exibir_em_horas = 0
     return redirect(url_for("receitas"))  # Redirect back to the gastos page
 
-
 # Rotas para Categorias
 @app.route("/categorias", methods=["GET", "POST"])
 def categorias():
@@ -214,11 +213,9 @@ def categorias():
         return categoriasController.add_categoria()
     return categoriasController.get_categorias()
 
-
 @app.route("/categorias/edit/<int:categoria_id>", methods=["GET", "POST"])
 def edit_categoria(categoria_id):
     return categoriasController.update_categoria(categoria_id)
-
 
 @app.route("/categorias/delete/<int:categoria_id>", methods=["POST"])
 def delete_categoria(categoria_id):

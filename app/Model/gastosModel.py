@@ -29,6 +29,8 @@ class GastosDB:
             comando="INSERT INTO Gastos (data, valor, categoria_id, usuario_id) VALUES (?, ?, ?, ?)",
             params=(gasto.data, gasto.valor, categoria, CPF),
         )
+        return "Gasto inserido com sucesso!"
+        
 
     def atualizar_gasto(self, categoria_nome, gasto: Gastos):
         with DBTransactionManager() as db_manager:
@@ -41,7 +43,6 @@ class GastosDB:
                 comando="UPDATE Categorias SET nome = ? WHERE id = (SELECT categoria_id FROM Gastos WHERE id = ? LIMIT 1);",
                 params=(categoria_nome, gasto.id),
             )
-
         return "Gasto atualizado com sucesso!"
 
     def listar_gastos(self, gastos: Gastos, CPF):

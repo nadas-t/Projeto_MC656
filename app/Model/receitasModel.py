@@ -30,6 +30,8 @@ class ReceitasDB:
             comando="INSERT INTO Receitas (data, valor, categoria_id, usuario_id) VALUES (?, ?, ?, ?)",
             params=(receita.data, receita.valor, categoria, CPF),
         )
+        
+        return "Receita cadastrada com sucesso!"
 
     def atualizar_receita(self, categoria_nome, receita: Receitas):
         with DBTransactionManager() as db_manager:
