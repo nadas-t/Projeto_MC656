@@ -16,10 +16,12 @@ def index():
         movimentacoes = dashboard.movimentacoes(session['CPF'])
 
         gastos = dashboard.calcular_gastos_por_categoria(session['CPF'])
+        total_gasto = dashboard.calcular_gasto_total(gastos)
+        
         categorias = list(gastos.keys())
         valores = list(gastos.values())
         n_categorias = len(categorias)
-        return render_template("index.html", saldo = saldo, movimentacoes = movimentacoes, categorias=categorias, valores=valores, n_categorias=n_categorias)
+        return render_template("index.html", saldo = saldo, movimentacoes = movimentacoes, gastos=total_gasto, categorias=categorias, valores=valores, n_categorias=n_categorias)
     else:
         return redirect(url_for("login"))
 

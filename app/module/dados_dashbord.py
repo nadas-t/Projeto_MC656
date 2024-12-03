@@ -11,14 +11,11 @@ from app.Model.receitasModel import (
     Receitas,
 )
 
-<<<<<<< HEAD
-=======
 from app.Model.categoriasModel import (
     CategoriasDB,
     resgatar_nome_categoria,
 )
 
->>>>>>> b83dd7e8 (implementa preenchimeto do grafico de gastos por categoria com dados do banco)
 class Dashboard:
 
     def __init__(self):
@@ -79,6 +76,12 @@ class Dashboard:
         gastos = gasto_db.listar_gasto_mes(mes_atual, CPF)
         
         return gastos
+
+    def calcular_gasto_total(self, gastos):
+        soma = 0
+        for gasto in gastos.values():
+            soma += gasto
+        return soma
     
     def calcular_gastos_por_categoria(self, CPF):
         valor_gasto_por_categoria = {}
