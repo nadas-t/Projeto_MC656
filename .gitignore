@@ -1,3 +1,7 @@
 # Arquivos e diretórios a serem ignorados pelo git
 .venv
+.vscode
 #Completar ...
+*.pyc
+__pycache__/
+*.db

@@ -1,0 +1,46 @@
+{% extends "layouts/layout2.html" %}
+
+{%block body%}
+
+{% set mensagens = get_flashed_messages() %}
+{% if mensagens %}
+<div>
+  {% for msg in mensagens %}
+  {% if msg == "Dados financeiros inseridos com sucesso!" %}
+  <div class="alerta alerta-successo" role="alert">
+    {{ msg }}
+  </div>
+  {% else %}
+  <div class="alerta alerta-erro" role="alert">
+    {{ msg }}
+  </div>
+  {% endif %}
+  {% endfor %}
+</div>
+{% endif %}
+
+
+<div class="col-12 grid-margin stretch-card">
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title">Dados financeiros</h4>
+      <p class="card-description"> Dados financeiros </p>
+      <form class="forms-sample" method="POST" action="/salario">
+        <div class="form-group">
+          <label for="salario">Salário</label>
+          <input type="number" class="form-control" id="salario" name="salario" placeholder="Digite o seu salário"
+            value="{{row[6] }}">
+        </div>
+        <div class="form-group">
+          <label for="horas_trabalho">Horas de trabalho</label>
+          <input type="number" class="form-control" id="horas_trabalho" name="horas_trabalho" placeholder="Digite o número de horas de trabalho"
+            value="{{row[7] }}">
+        </div>
+        <button type="submit" class="btn btn-primary mr-2">Confirmar</button>
+        <button class="btn btn-dark">Cancelar</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

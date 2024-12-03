@@ -1,0 +1,57 @@
+{% extends "layouts/layout2.html" %}
+
+{% block body %}
+
+<div class="col-12 grid-margin stretch-card">
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title">Editar gasto</h4>
+      <p class="card-description"> Editar gasto </p>
+      
+      <form class="forms-sample" method="POST" action="{{ url_for('edit_gasto', gasto_id=gasto['id']) }}">
+        
+        <div class="dropdown">
+            <button class="btn btn-danger btn-lg dropdown-toggle" type="button" id="dropdownMenuSizeButton1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{ gasto['categoria_nome'] if gasto['categoria_nome'] else 'Selecione uma categoria' }}
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuSizeButton1">
+                <h6 class="dropdown-header">Categorias</h6>
+                {% for categoria in categorias %}
+                <a class="dropdown-item" href="#" data-nome="{{ categoria['nome'] }}" onclick="selectOption(this.dataset.nome)">
+                    {{ categoria['nome'] }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        <br>
+
+        <div class="form-group">
+          <label for="data">Data</label>
+          <input type="date" class="form-control" id="data" name="data" value="{{gasto['data']}}" required>
+        </div>
+
+        <div class="form-group">
+          <label for="valor">Valor</label>
+          <input type="text" class="form-control" id="valor" name="valor" value="{{gasto['valor']}}" placeholder="Digite o valor">
+        </div>
+
+        <div class="form-group">
+          <label for="categoria_nome">Categoria</label>
+          <input type="text" class="form-control" id="categoria_nome" name="categoria_nome" value="{{gasto['categoria_nome']}}" placeholder="Digite a categoria">
+        </div>
+        
+        <button type="submit" class="btn btn-primary mr-2">Atualizar gastos</button>
+        <button type="button" class="btn btn-dark" onclick="window.history.back();">Cancelar</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+    function selectOption(option) {
+        const button = document.getElementById('dropdownMenuSizeButton1');
+        button.textContent = option; // Atualiza o texto do botão com a opção selecionada
+    }
+</script>
+
+{% endblock %}
