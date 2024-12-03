@@ -7,7 +7,6 @@ from app.Controller.gastosController import GastosController
 from app.Controller.receitasController import ReceitasController
 from app.module.dados_dashbord import Dashboard
 
-
 @app.route("/")
 @app.route("/index")
 def index():
@@ -19,7 +18,7 @@ def index():
         movimentacoes = dashboard.movimentacoes(session['CPF'])
         gastos = dashboard.gastos_mes(session['CPF'])
         
-        return render_template("index.html", saldo = saldo, movimentacoes = movimentacoes)
+        return render_template("index.html", saldo = saldo, gastos = gastos, movimentacoes = movimentacoes)
     else:
         return redirect(url_for("login"))
 

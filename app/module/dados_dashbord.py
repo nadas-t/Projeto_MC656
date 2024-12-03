@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from app.Model.databaseManager import DBTransactionManager, BaseDB
 from datetime import datetime
 
@@ -10,10 +9,6 @@ from app.Model.gastosModel import (
 from app.Model.receitasModel import (
     ReceitasDB,
     Receitas,
-)
-
-from app.Model.categoriasModel import (
-    CategoriasDB,
 )
 
 class Dashboard:
@@ -47,13 +42,15 @@ class Dashboard:
         with DBTransactionManager() as db_manager:
             movimentacoes = db_manager.executar_transacao(
                 comando="SELECT g.data, g.valor, c.nome AS categoria_nome, g.tipo "
-                        "FROM (SELECT data, valor, categoria_id, data_insercao, 'Gasto' AS tipo " 
-                        "FROM Gastos "
+                        "FROM (SELECT data, valor, categoria_id, data_insercao, 'Gasto' AS tipo, usuario_id "
+                        "FROM Gastos WHERE usuario_id = ? "
                         "UNION ALL "
-                        "SELECT data, valor, categoria_id, data_insercao, 'Receita' AS tipo "
-                        "FROM Receitas) AS g JOIN categorias AS c ON g.categoria_id = c.id "
-                        "ORDER BY g.data_insercao DESC LIMIT 20",
-            )
+                        "SELECT data, valor, categoria_id, data_insercao, 'Receita' AS tipo, usuario_id "
+                        "FROM Receitas WHERE usuario_id = ? "
+                        ") AS g "
+                        "JOIN categorias AS c ON g.categoria_id = c.id ORDER BY g.data_insercao DESC LIMIT 20;",
+                        params=(CPF, CPF),
+                )
 
             dados = [self.converter_consulta_de_movimentacoes_em_objeto(row) for row in movimentacoes]
             
