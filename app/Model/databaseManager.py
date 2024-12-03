@@ -7,7 +7,7 @@ class ErroNaComunicacaoComDB(Exception):
 
 
 def conexao():
-    DB_PATH = os.path.join("app", "database", "database.db")
+    DB_PATH = os.path.join("app", "database", "database")
     con = sqlite3.connect(DB_PATH)
     return con
 

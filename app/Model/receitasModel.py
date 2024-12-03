@@ -1,125 +1,104 @@
 from dataclasses import dataclass
-from datetime import date, datetime
+from app.Model.categoriasModel import Categorias
 from app.Model.databaseManager import DBTransactionManager, BaseDB
-
-
-class ErroAoCadastrarReceita(Exception):
-    pass
-
-
-class ValorDeReceitaInsulficiente(ErroAoCadastrarReceita):
-    pass
-
-
-class ErroAoCadastrarCategoria(Exception):
-    pass
-
-
-class NomeCategoriaInvalido(ErroAoCadastrarCategoria):
-    pass
-
-
-class CategoriaNaoRegistrada(Exception):
-    pass
+from app.Model.categoriasModel import CategoriasDB
 
 
 @dataclass
-class Categoria:
-    nome: str
+class Receitas:
+    data: str = None
+    valor: float = None
     id: int = None
+    categoria: Categorias = None
 
     def __post_init__(self):
-        self.validar_instancia()
+        pass  # TODO adicionar validação dos campos
 
-    def validar_instancia(self):
-        if not self.nome:
-            raise NomeCategoriaInvalido("Não é possível criar uma categoria vazia!")
+class ReceitasDB:
 
-
-@dataclass
-class Receita:
-    data_recebimento: date
-    categoria: Categoria
-    valor: float
-    data_cadastro: date = datetime.now()
-    id: int = None
-
-    def __post_init__(self):
-        self.validar_instancia()
-
-    def validar_instancia(self):
-        if self.valor <= 0:
-            raise ValorDeReceitaInsulficiente(
-                f'"{self.valor}" é insulficiente para criação da receita!'
-            )
-
-
-class CategoriaDB:
     def __init__(self):
         self._db = BaseDB()
+        self._categoriaBD = CategoriasDB()
 
-    def resgatar_categoria(self, categoria: Categoria):
-        categoria_encontrada = self._db.executar_transacao(
-            comando="SELECT id FROM Categorias WHERE nome = ?",
-            params=(categoria.nome,),
-            fetchone=True,
-        )
-        return categoria_encontrada
+    def registrar_receita_com_transacao(self, receita: Receitas, categorias: Categorias, CPF):
+        with DBTransactionManager():
+            categoria_id = self._categoriaBD.vincular_categoria(categorias, CPF)
+            self.registrar_receita(categoria_id, receita, CPF)
 
-    def adicionar_categoria(self, categoria: Categoria):
+    def registrar_receita(self, categoria, receita, CPF):
         self._db.executar_transacao(
-            comando="INSERT INTO Categorias (nome) VALUES (?)",
-            params=(categoria.nome,),
-            commit=True,
+            comando="INSERT INTO Receitas (data, valor, categoria_id, usuario_id) VALUES (?, ?, ?, ?)",
+            params=(receita.data, receita.valor, categoria, CPF),
         )
-        nova_categoria = self.resgatar_categoria(categoria)
-        return nova_categoria
 
-    def resgatar_categoria_registrada(self, categoria: Categoria):
-        categoria_encontrada = self.resgatar_categoria(categoria)
-        if not categoria_encontrada:
-            raise CategoriaNaoRegistrada(
-                f'A categoria "{categoria.nome}" ainda não está '
-                f"registrada no sistema"
+    def atualizar_receita(self, categoria_nome, receita: Receitas):
+        with DBTransactionManager() as db_manager:
+            db_manager.executar_transacao(
+                comando="UPDATE Receitas SET data = ?, valor = ? WHERE id = ?",
+                params=(receita.data, receita.valor, receita.id),
             )
-        return categoria_encontrada
 
-
-class ReceitaDB:
-    def __init__(self):
-        self._db = BaseDB()
-        self._categoriaBD = CategoriaDB()
-
-    def transacao_registrar_receita(
-        self, receita: Receita
-    ):  # TODO pensar em um nome melhor
-        with DBTransactionManager:
-            self.adicionar_receita(receita)
-
-    def adicionar_receita(self, receita: Receita):
-        try:
-            categoria = self._categoriaBD.resgatar_categoria_registrada(
-                receita.categoria
+            db_manager.executar_transacao(
+                comando="UPDATE Categorias SET nome = ? WHERE id = (SELECT categoria_id FROM Receitas WHERE id = ? LIMIT 1);",
+                params=(categoria_nome, receita.id),
             )
-        except CategoriaNaoRegistrada:
-            categoria = self._categoriaBD.adicionar_categoria(receita.categoria)
 
-        self.registrar_receita(categoria, receita)
+        return "Receita atualizada com sucesso!"
 
-    def registrar_receita(self, categoria: Categoria, receita: Receita):
-        self._db.executar_transacao(
-            comando="INSERT INTO Gastos (data, valor, categoria_id) VALUES (?, ?, ?)",
-            params=(receita.data_recebimento, receita.valor, categoria.id),
+    def listar_receitas(self, receitas: Receitas, CPF):
+        with DBTransactionManager():
+            if receitas.id is not None:
+                resultado = self.recuperar_receita(receitas.id, CPF)
+            else:
+                resultado = self.recuperar_receitas_registradas(CPF)
+            if resultado:
+                receitas = [
+                    self.converter_consulta_de_receitas_em_objeto(row)
+                    for row in resultado
+                ]
+                return receitas
+            return []
+
+    def recuperar_receita(self, receita_id: int, CPF):
+        receita = self._db.executar_transacao(
+            
+            comando="SELECT Receitas.id AS receita_id, data, valor, Categorias.nome AS categoria_nome "
+                "FROM Receitas " 
+                "JOIN Categorias ON Receitas.categoria_id = Categorias.id " 
+                "WHERE receita_id = ? AND Receitas.usuario_id = ? ORDER BY data_insercao DESC",
+            params=(receita_id, CPF)
         )
+        return receita
 
-    def obter_receita_por_id(self, receita_id: int):
-        self._db.executar_transacao(
-            comando=(
-                "SELECT Gastos.id, Gastos.data, Gastos.valor, Categorias.nome"
-                "AS categoria_nome"
-                "FROM Gastos LEFT JOIN Categorias"
-                "ON Gastos.categoria_id = Categorias.id"
-                "WHERE Gastos.id = ?"
-            ),
-            params=(receita_id),
+    def recuperar_receitas_registradas(self, CPF):
+        receitas = self._db.executar_transacao(
+            comando="SELECT Receitas.id AS gasto_id, data, valor, Categorias.nome AS categoria_nome "
+                "FROM Receitas " 
+                "JOIN Categorias ON Receitas.categoria_id = Categorias.id "  
+                "WHERE Receitas.usuario_id = ? ORDER BY data_insercao DESC",
+            params=(CPF,)
         )
+        return receitas
+
+    def converter_consulta_de_receitas_em_objeto(self, consulta) -> Receitas:
+        receita = {
+            "id": consulta[0],
+            "data": consulta[1],
+            "valor": consulta[2],
+            "categoria_nome": consulta[3],
+        }
+        return receita
+
+    def deletar_receita(self, receita_id):
+        with DBTransactionManager() as db_manager:
+            db_manager.executar_transacao(
+                comando="DELETE FROM Receitas WHERE id = ?",
+                params=(receita_id,),
+            )
+        return "Receita deletada com sucesso!"
+
+
+def converte_receita_horas(receitas, receita_por_hora):
+    for receita in receitas:
+        receita.valor = receita.valor / receita_por_hora
+    return receitas

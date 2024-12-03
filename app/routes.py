@@ -3,11 +3,13 @@ from flask import render_template, request, flash, redirect, url_for, session
 from app.Controller import categoriasController
 from app.Controller import usuarioController
 from app.Controller.usuarioController import *
-from app.Controller.gastosController import GastosController, SalarioController
 from app.Controller.salarioController import *
 from app.Controller.limitesController import ExisteLimiteEmAndamento, LimitesController
 from app.Model.limitesModel import DataDeExpiracaoInvalida, ValorInsulficiente
 from app.Model.notificacoes.limiteGastos import AlertasLimiteGastos
+from app.Controller.gastosController import GastosController
+from app.Controller.receitasController import ReceitasController
+from app.module.dados_dashbord import Dashboard
 
 
 @app.route("/")
@@ -18,8 +20,15 @@ def index():
         alertas = {}
         alerta_limite = AlertasLimiteGastos.capturar_alerta(session['CPF'])
         alertas['alerta_limite'] = alerta_limite
-        return render_template('index.html', alertas=alertas)
       
+
+        
+        dashboard = Dashboard()
+        saldo = dashboard.saldo(session['CPF'])
+        movimentacoes = dashboard.movimentacoes(session['CPF'])
+        gastos = dashboard.gastos_mes(session['CPF'])
+        
+        return render_template("index.html", alertas=alertas,saldo = saldo, movimentacoes = movimentacoes)
     else:
         return redirect(url_for("login"))
 
@@ -79,29 +88,26 @@ def autenticar():
 
 @app.route("/configuracao_conta", methods=["GET", "POST"])
 def configuracao_conta():
-    if "username" in session:
-        if request.method == "POST":
-            CPF = request.form.get("CPF")
-            nome = request.form.get("nome")
-            idade = request.form.get("idade")
-            email = request.form.get("email")
-
-            resultado = usuarioController.UsuariosController.atualizarUsuario(
-                CPF, nome, idade, email, session["senha"]
-            )
-            session["email"] = email
-            session["username"] = nome
+    if 'username' in session:
+        if request.method == 'POST':
+            CPF = request.form.get('CPF')
+            nome = request.form.get('nome')  
+            idade = request.form.get('idade')
+            email = request.form.get('email')
+            salario = request.form.get('salario')
+            limite = request.form.get('limite')
+            horas_trabalho = request.form.get('horas_trabalho')
+            
+            resultado = usuarioController.UsuariosController.atualizarUsuario(CPF, nome, idade, email, session['senha'], salario, limite, horas_trabalho)
+            session['email'] = email
+            session['username'] = nome
 
             flash(resultado)
-            return redirect("/configuracao_conta")
-
-        result_list = usuarioController.UsuariosController.login(
-            session["email"], session["senha"]
-        )
-
-        row = result_list
-
-        return render_template("usuario/configuracao_conta.html", row=row)
+            return redirect('/configuracao_conta')
+        
+        row = usuarioController.UsuariosController.login(session['email'], session['senha'])
+        
+        return render_template('usuario/configuracao_conta.html', row=row)
 
     return redirect(url_for("login"))
 
@@ -122,7 +128,6 @@ def trocar_senha():
             )
             if resultado == "Senha atualizada com sucesso!":
                 session["senha"] = senha1
-
             flash(resultado)
             return redirect("/trocar_senha")
 
@@ -131,29 +136,45 @@ def trocar_senha():
 
     return redirect(url_for("login"))
 
+@app.route('/salario', methods=['GET', 'POST'])
+def add_salario():
 
+    if 'username' in session:
+        
+        if request.method == 'POST':
+            
+            salario = request.form.get('salario')  
+            horas_trabalho = request.form.get('horas_trabalho')
+
+            resultado = usuarioController.UsuariosController.adicionarSalario(session['CPF'], salario, horas_trabalho)
+            flash(resultado)
+
+            return redirect('/salario')
+    
+        row = usuarioController.UsuariosController.login(session['email'], session['senha'])            
+        return render_template('usuario/salario.html', row=row)
+    
 # Rotas para Gastos
 @app.route("/gastos", methods=["GET", "POST"])
 def gastos():
     if request.method == "POST":
         if "adicionar_gasto" in request.form:
-            return GastosController.add_gasto()
+            return GastosController.add_gasto(session['CPF'])
 
         elif "converter_gasto" in request.form:
             return redirect("/convert_gasto")
 
-    return GastosController.get_gastos()
+    return GastosController.get_gastos(session['CPF'])
 
 
 @app.route("/gastos/edit/<int:gasto_id>", methods=["GET", "POST"])
 def edit_gasto(gasto_id):
-    return GastosController.update_gasto(gasto_id)
+    return GastosController.update_gasto(gasto_id, session['CPF'])
 
 
 @app.route("/gastos/delete/<int:gasto_id>", methods=["POST"])
 def delete_gasto(gasto_id):
     return GastosController.delete_gasto(gasto_id)
-
 
 @app.route("/convert_gasto", methods=["GET", "POST"])
 def convert_gasto():
@@ -162,6 +183,37 @@ def convert_gasto():
     elif GastosController.exibir_em_horas == 1:
         GastosController.exibir_em_horas = 0
     return redirect(url_for("gastos"))  # Redirect back to the gastos page
+
+
+# Rotas para Receitas
+@app.route("/receitas", methods=["GET", "POST"])
+def receitas():
+    if request.method == "POST":
+        if "adicionar_receita" in request.form:
+            return ReceitasController.add_receita(session['CPF'])
+
+        elif "converter_receita" in request.form:
+            return redirect("/convert_receita")
+
+    return ReceitasController.get_receitas(session['CPF'])
+
+
+@app.route("/receitas/edit/<int:receita_id>", methods=["GET", "POST"])
+def edit_receita(receita_id):
+    return ReceitasController.update_receita(receita_id, session['CPF'])
+
+
+@app.route("/receitas/delete/<int:receita_id>", methods=["POST"])
+def delete_receita(receita_id):
+    return ReceitasController.delete_receita(receita_id)
+
+@app.route("/convert_receita", methods=["GET", "POST"])
+def convert_receita():
+    if ReceitasController.exibir_em_horas == 0:
+        ReceitasController.exibir_em_horas = 1
+    elif ReceitasController.exibir_em_horas == 1:
+        ReceitasController.exibir_em_horas = 0
+    return redirect(url_for("receitas"))  # Redirect back to the gastos page
 
 
 # Rotas para Categorias
@@ -232,6 +284,7 @@ def edit_limite(limite_id):
         except ValorInsulficiente:
             erros['valor'] = "O valor inserido para o limite deve ser maior que 0!"
         return render_template("edit_limite.html", limite=limite_editado, erros=erros)
+
 # Rota para aprender mais
 @app.route("/aprender-mais", methods=["GET"])
 def aprenderMais():
@@ -262,3 +315,4 @@ def conteudo4():
 def conteudo5():
     
     return render_template("conteudo5.html")    
+    

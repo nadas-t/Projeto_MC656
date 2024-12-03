@@ -56,8 +56,9 @@ class UsuariosController:
         return resultado
     
     @staticmethod
-    def atualizarUsuario(CPF, nome, idade, email, senha):
-        usuario = Usuario(CPF=CPF, nome=nome, idade=idade, email=email, senha=senha)
+    def atualizarUsuario(CPF, nome, idade, email, senha, salario, limite, horas_trabalho):
+        usuario = Usuario(CPF=CPF, nome=nome, idade=idade, email=email, senha=senha, 
+                          salario=salario, limite=limite, horas_trabalho=horas_trabalho)
         usuario_db = UsuarioDB()
         resultado = usuario_db.atualizar(usuario)
         return resultado
@@ -84,5 +85,12 @@ class UsuariosController:
             else:
                 resultado = "Senha incorreta!"
 
+        return resultado
+    
+    @staticmethod
+    def adicionarSalario(CPF, salario, horas_trabalho):
+        usuario = Usuario(CPF=CPF, salario=salario, horas_trabalho=horas_trabalho)
+        usuario_db = UsuarioDB()
+        resultado = usuario_db.adicionarSalario(usuario)
         return resultado
     

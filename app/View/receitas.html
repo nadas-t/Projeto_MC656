@@ -4,16 +4,16 @@
 {% block body %}
 
 <div class="page-header">
-  <h3 class="page-title"> Registrar gastos </h3>
+  <h3 class="page-title"> Registrar receitas </h3>
 </div>
 
 <div class="row">
   <div class="col-12 grid-margin stretch-card">
     <div class="card">
       <div class="card-body">
-        <h4 class="card-title">Registrar gastos</h4>
-        <p class="card-description"> Registrar gastos </p>
-        <form class="forms-sample" method="POST" action="/gastos">
+        <h4 class="card-title">Registrar receitas</h4>
+        <p class="card-description"> Registrar receitas </p>
+        <form class="forms-sample" method="POST" action="/receitas">
           <div class="form-group">
             <label for="data">Data</label>
             <input type="date" class="form-control" name="data" id="data">
@@ -27,10 +27,10 @@
             <input type="text" class="form-control" id="categoria_nome" name="categoria_nome" placeholder="Digite a categoria">
           </div>
 
-          <button type="submit" id="adicionar_gasto" name="adicionar_gasto" value="Adicionar gasto" class="btn btn-primary mr-2">Adicionar
-            gasto</button>
-          <button type="submit" id="converter_gasto" name="converter_gasto" value="converter_gasto" class="btn btn-primary mr-2">Converter
-            gasto</button>
+          <button type="submit" id="adicionar_receita" name="adicionar_receita" value="Adicionar receita" class="btn btn-primary mr-2">Adicionar
+            receita</button>
+          <button type="submit" id="converter_receita" name="converter_receita" value="converter_receita" class="btn btn-primary mr-2">Converter
+            receita</button>
         </form>
 
       </div>
@@ -43,8 +43,8 @@
     <div class="card">
       <div class="card-body">
 
-        <h4 class="card-title">Gastos</h4>
-        {% if gastos|length < 1 %} <h4 class="card-title">Você ainda não registrou nenhum gasto.</h4>
+        <h4 class="card-title">receitas</h4>
+        {% if receitas|length < 1 %} <h4 class="card-title">Você ainda não registrou nenhuma receita.</h4>
           {% else %}
           <div class="table-responsive">
             <table class="table table-bordered">
@@ -59,22 +59,22 @@
                 <th>Remover</th>
                 <th>Alterar</th>
               </tr>
-              {% for gasto in gastos %}
+              {% for receita in receitas %}
               <tr>
-                <td>{{ gasto.data }}</td>
+                <td>{{ receita.data }}</td>
                 {%if exibir_horas %}
-                <td>{{ "%.1f"|format((gasto.valor / salario_hora)) }}</td>
+                <td>{{ "%.1f"|format((receita.valor / salario_hora)) }}</td>
                 {% else %}
-                <td>{{ gasto.valor }}</td>
+                <td>{{ receita.valor }}</td>
                 {%endif%}
-                <td>{{ gasto.categoria_nome }}</td>
+                <td>{{ receita.categoria_nome }}</td>
                 <td>
-                  <form action="{{ url_for('delete_gasto', gasto_id=gasto.id) }}" method="post"">
+                  <form action="{{ url_for('delete_receita', receita_id=receita.id) }}" method="post">
               <button type=" submit" class="btn btn-danger btn-fw">Deletar</button>
                   </form>
                 </td>
                 <td>
-                  <form action="{{ url_for('edit_gasto', gasto_id=gasto.id) }}" method="get" style="display:inline;">
+                  <form action="{{ url_for('edit_receita', receita_id=receita.id) }}" method="get" style="display:inline;">
                     <button type="submit" class="btn btn-info btn-fw">Editar</button>
                   </form>
                 </td>
