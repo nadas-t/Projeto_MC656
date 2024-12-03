@@ -22,6 +22,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/style.css') }}">
     <!-- End layout styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/images/favicon.png') }}">
+    {% block styles %}
+    {% endblock %}
   </head>
   <body>
     <div class="container-scroller">
@@ -109,6 +111,15 @@
                 <li class="nav-item"> <a class="nav-link" href="/salario">Inserir salário</a></li>
               </ul>
             </div>
+          </li>
+          <!-- comentário -->
+          <li class="nav-item menu-items"> 
+            <a class="nav-link" href="\aprender-mais">
+              <span class="menu-icon">
+                <img src="../../static/assets/icons/book.png" alt="icone de um livro em vermelho">
+              </span>
+              <span class="menu-title">Aprender Mais</span>
+            </a>
           </li>
         </ul>
       </nav>

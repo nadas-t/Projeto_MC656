@@ -1,0 +1,86 @@
+{% extends "layouts/layout2.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/aprenderMais.css') }}">
+{% endblock %}
+
+{%block body%}
+
+    <!-- <div class="card">
+          <div class="d-flex flex-row justify-content-between">
+            <h4 class="card-title mb-1">Conteúdos disponíveis</h4>
+            <p class="text-muted mb-1"> asjajlsas assssssssssssssssssssssssssssssssssssssssssssssssss</p>
+            <p>as kalskasalkkkkkkkkkkmdaksmas</p>
+          </div>
+      </div> -->
+
+      <div class="card">
+        <div class="card-body">
+            <!-- Título no topo -->
+            <h4 class="card-title mb-3">Planejamento Financeiro Pessoal</h4>
+            
+            <!-- Parágrafo principal -->
+            <p class="text-muted mb-2">Como Organizar Sua Vida Financeira: O Passo a Passo para Alcançar Seus Objetivos Pessoais</p>
+            
+            
+        <!-- Introdução -->
+        <p class="text-muted mb-3">O planejamento financeiro pessoal é um processo fundamental para garantir o controle das finanças e alcançar os objetivos de vida de maneira eficiente. Ele envolve a organização das receitas, despesas, investimentos e economias, buscando um equilíbrio entre os gastos e a geração de riqueza.</p>
+        
+        <!-- Primeira seção: Importância do planejamento financeiro -->
+        <h5 class="mb-2">Por que o Planejamento Financeiro é Importante?</h5>
+        <p class="mb-2">O planejamento financeiro é essencial para qualquer pessoa, pois permite ter uma visão clara da situação financeira, evitando surpresas desagradáveis. Ele ajuda a controlar os gastos, evitar o endividamento e alcançar metas financeiras, como a compra de uma casa ou a aposentadoria tranquila.</p>
+        
+        <!-- Subtítulo: Gestão de Despesas -->
+        <h6 class="mb-2">Gestão de Despesas</h6>
+        <p class="mb-2">Uma parte importante do planejamento financeiro é saber como gerenciar suas despesas. Isso inclui a criação de um orçamento mensal, onde você deve categorizar seus gastos, como alimentação, moradia, transporte e lazer. A partir disso, você poderá identificar áreas onde pode economizar e ajustar seus hábitos de consumo.</p>
+        
+        <!-- Subtítulo: Economias e Investimentos -->
+        <h6 class="mb-2">Economias e Investimentos</h6>
+        <p class="mb-2">Além de controlar os gastos, é essencial criar uma reserva financeira para imprevistos e investir para o futuro. A criação de uma poupança de emergência deve ser uma prioridade para cobrir despesas inesperadas. Já os investimentos são importantes para aumentar o patrimônio ao longo do tempo e alcançar objetivos mais ambiciosos, como aposentadoria ou compra de um imóvel.</p>
+        
+        <!-- Segunda seção: Como Criar um Planejamento Financeiro -->
+        <h5 class="mb-2">Como Criar um Planejamento Financeiro Eficiente?</h5>
+        <p class="mb-2">Criar um planejamento financeiro eficiente envolve algumas etapas fundamentais que devem ser seguidas de maneira estruturada:</p>
+        <ul>
+            <li><strong>1. Defina seus Objetivos</strong> - Estabeleça metas financeiras claras, como comprar um carro ou quitar dívidas.</li>
+            <li><strong>2. Controle suas Receitas e Despesas</strong> - Tenha um controle rigoroso de quanto ganha e quanto gasta por mês.</li>
+            <li><strong>3. Estabeleça uma Reserva de Emergência</strong> - Tenha uma poupança para imprevistos.</li>
+            <li><strong>4. Invista para o Futuro</strong> - Não dependa apenas da poupança, comece a investir o quanto antes.</li>
+            <li><strong>5. Acompanhe seu Progresso</strong> - Revise seu planejamento regularmente e ajuste conforme necessário.</li>
+        </ul>
+        
+        <!-- Subtítulo: Ferramentas de Planejamento Financeiro -->
+        <h6 class="mb-2">Ferramentas de Planejamento Financeiro</h6>
+        <p class="mb-2">Existem várias ferramentas que podem ajudar a organizar seu planejamento financeiro, como aplicativos de controle de despesas e planilhas de orçamento. Esses recursos permitem que você tenha uma visão clara e detalhada das suas finanças, facilitando a análise e o ajuste do seu comportamento financeiro.</p>
+        
+        <!-- Subtítulo: Vantagens de um Planejamento Financeiro Bem Feito -->
+        <h6 class="mb-2">Vantagens de um Planejamento Financeiro Bem Feito</h6>
+        <p class="mb-2">Ao adotar um planejamento financeiro, você ganha diversas vantagens, como:</p>
+        <ul>
+            <li>Redução de dívidas e juros pagos.</li>
+            <li>Capacidade de realizar grandes objetivos financeiros.</li>
+            <li>Maior segurança e tranquilidade diante de imprevistos.</li>
+            <li>Melhora na qualidade de vida e no controle emocional sobre o dinheiro.</li>
+        </ul>
+
+        <!-- Terceira seção: Desafios no Planejamento Financeiro -->
+        <h5 class="mb-2">Desafios no Planejamento Financeiro</h5>
+        <p class="mb-2">Embora o planejamento financeiro seja crucial, ele pode apresentar desafios, como a dificuldade de controlar os impulsos de consumo ou a falta de disciplina para poupar e investir regularmente. Além disso, imprevistos financeiros podem surgir, como a perda de emprego ou uma emergência médica, dificultando a manutenção de um orçamento.</p>
+        
+        <!-- Subtítulo: Como Superar os Desafios? -->
+        <h6 class="mb-2">Como Superar os Desafios?</h6>
+        <p class="mb-2">Para superar os desafios do planejamento financeiro, é importante ter disciplina, buscar educação financeira contínua e, se necessário, buscar o auxílio de profissionais, como consultores financeiros. A chave é começar cedo e ser persistente nos ajustes e melhorias do seu planejamento.</p>
+        
+        <!-- Conclusão -->
+        <h5 class="mb-2">Conclusão</h5>
+        <p class="mb-2">O planejamento financeiro pessoal é uma ferramenta essencial para alcançar estabilidade financeira e garantir o futuro. Ao controlar suas despesas, investir com sabedoria e se planejar para imprevistos, você estará no caminho certo para atingir seus objetivos e viver com mais tranquilidade.</p>
+        
+        <!-- Parágrafos adicionais -->
+        <p class="mb-2">Nunca é tarde para começar, e os resultados positivos podem ser alcançados com pequenas ações diárias. Comece agora e mude o rumo da sua vida financeira.</p>
+    </div>
+</div>
+
+    
+
+
+{% endblock %}
