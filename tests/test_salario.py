@@ -22,15 +22,53 @@ class SalarioTestCase(unittest.TestCase):
                     self.assertEqual(SalarioController.salario, 3000.0)
                     self.assertEqual(SalarioController.horas, 40.0)
 
-    def test_add_salario_non_positive(self):
+    def test_add_salario_zero(self):
+        salarioInicial = SalarioController.salario
+        horasInicial = SalarioController.horas
         with self.app.app_context():
-            with self.app.test_request_context('/salario', method='POST', data={'salario': '0', 'horas_trabalho': '-40'}):
+            with self.app.test_request_context('/salario', method='POST', data={'salario': '0', 'horas_trabalho': '40'}):
                 with patch('flask.flash') as mock_flash:
                     response = SalarioController.add_salario()
                     
                     # Check if the controller updated the class variables
-                    self.assertNotEqual(SalarioController.salario, 0)
-                    self.assertNotEqual(SalarioController.horas, 0)
+                    self.assertEqual(SalarioController.salario, salarioInicial)
+                    self.assertEqual(SalarioController.horas, horasInicial)
+
+    def test_add_salario_negative(self):
+        salarioInicial = SalarioController.salario
+        horasInicial = SalarioController.horas
+        with self.app.app_context():
+            with self.app.test_request_context('/salario', method='POST', data={'salario': '-3000', 'horas_trabalho': '40'}):
+                with patch('flask.flash') as mock_flash:
+                    response = SalarioController.add_salario()
+                    
+                    # Check if the controller did not update the class variables
+                    self.assertEqual(SalarioController.salario, salarioInicial)
+                    self.assertEqual(SalarioController.horas, horasInicial)
+
+    def test_add_horas_zero(self):
+        salarioInicial = SalarioController.salario
+        horasInicial = SalarioController.horas
+        with self.app.app_context():
+            with self.app.test_request_context('/salario', method='POST', data={'salario': '3000', 'horas_trabalho': '0'}):
+                with patch('flask.flash') as mock_flash:
+                    response = SalarioController.add_salario()
+                    
+                    # Check if the controller did not update the class variables
+                    self.assertEqual(SalarioController.salario, salarioInicial)
+                    self.assertEqual(SalarioController.horas, horasInicial)
+    
+    def test_add_horas_negative(self):
+        salarioInicial = SalarioController.salario
+        horasInicial = SalarioController.horas
+        with self.app.app_context():
+            with self.app.test_request_context('/salario', method='POST', data={'salario': '3000', 'horas_trabalho': '-40'}):
+                with patch('flask.flash') as mock_flash:
+                    response = SalarioController.add_salario()
+                    
+                    # Check if the controller did not update the class variables
+                    self.assertEqual(SalarioController.salario, salarioInicial)
+                    self.assertEqual(SalarioController.horas, horasInicial)
 
     def test_get_salario(self):
         SalarioController.salario = 3000.0
